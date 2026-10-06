@@ -1,0 +1,50 @@
+[
+  {
+    "symbol": "USDJPY",
+    "timeframe": "H1",
+    "magic": 100000,
+    "sigma": 2.7,
+    "tp_pips": 11,
+    "sl_pips": 7,
+    "use_trend_filter": true,
+    "ma_period": 50,
+    "min_hold_bars": 7,
+    "max_hold_bars": 20
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "H4",
+    "magic": 100001,
+    "sigma": 0.5,
+    "tp_pips": 22,
+    "sl_pips": 5,
+    "use_trend_filter": false,
+    "ma_period": 40,
+    "min_hold_bars": 9,
+    "max_hold_bars": 25
+  },
+  {
+    "symbol": "GBPJPY",
+    "timeframe": "H1",
+    "magic": 100002,
+    "sigma": 0.6,
+    "tp_pips": 10,
+    "sl_pips": 5,
+    "use_trend_filter": false,
+    "ma_period": 20,
+    "min_hold_bars": 10,
+    "max_hold_bars": 45
+  },
+  {
+    "symbol": "GBPJPY",
+    "timeframe": "H4",
+    "magic": 100003,
+    "sigma": 1.4,
+    "tp_pips": 14,
+    "sl_pips": 5,
+    "use_trend_filter": false,
+    "ma_period": 50,
+    "min_hold_bars": 7,
+    "max_hold_bars": 35
+  }
+]

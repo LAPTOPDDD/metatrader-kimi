@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wide Brain V2.1: Архитектура и Логика</title>
+    <style>
+        :root {
+            --bg-color: #1e1e2e;
+            --card-bg: #252537;
+            --text-main: #cdd6f4;
+            --text-muted: #a6adc8;
+            --accent: #89b4fa;
+            --green: #a6e3a1;
+            --red: #f38ba8;
+            --code-bg: #181825;
+            --border: #313244;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--accent);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+        }
+
+        h2 {
+            color: var(--green);
+            border-left: 4px solid var(--green);
+            padding-left: 15px;
+            margin-top: 0;
+        }
+
+        h3 {
+            color: var(--accent);
+            margin-top: 20px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        li::before {
+            content: "➤";
+            color: var(--accent);
+            position: absolute;
+            left: 0;
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            color: #fab387;
+            border: 1px solid var(--border);
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .warning {
+            background-color: rgba(243, 139, 168, 0.1);
+            border-left: 4px solid var(--red);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .info-box {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .info-card {
+            background: rgba(137, 180, 250, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Wide Brain V2.1</h1>
+        <div class="subtitle">Архитектура "Широкого Мозга": Абляция и Базовая Линия</div>
+    </header>
+
+    <!-- Введение -->
+    <div class="section">
+        <h2>🎯 Цель Скрипта</h2>
+        <p>Этот скрипт реализует <strong>"Base"-линию</strong> торговой стратегии. Он предназначен для честного сравнения с более сложными версиями (V2 Full), поэтому из него намеренно удалены:</p>
+        <ul>
+            <li>Stage 2 (Кросс-активные "головы" нейросети).</li>
+            <li>Мета-контроллер риска (динамическое управление размером позиции).</li>
+        </ul>
+        <p>Остается чистая логика: <span class="highlight">Stage 1</span> (индивидуальные модели для каждой пары) и <span class="highlight">Равновесный портфель</span>.</p>
+    </div>
+
+    <!-- Конфигурация -->
+    <div class="section">
+        <h2>⚙️ Конфигурация (Настройки)</h2>
+        <p>Все ключевые параметры вынесены в начало файла для удобства tuning'а.</p>
+        
+        <div class="info-box">
+            <div class="info-card">
+                <strong>SIGMA = 1.5</strong><br>
+                Параметр сглаживания цели. Используется Gaussian Filter для определения тренда. Чем выше, тем более долгосрочный тренд ловим.
+            </div>
+            <div class="info-card">
+                <strong>BASE_TF = "M15"</strong><br>
+                Базовый таймфрейм, на котором принимаются торговые решения.
+            </div>
+            <div class="info-card">
+                <strong>HIGHER = ["M30", "H1", "H4"]</strong><br>
+                Старшие таймфреймы, данные с которых подтягиваются как дополнительный контекст.
+            </div>
+        </div>
+
+        <div class="code-block">
+BARS_TRAIN = 1000  # Размер окна обучения (Walk-Forward start)<br>
+FOLD       = 90    # Длина одного тестового окна (шаг прокрутки)<br>
+N_FOLDS    = 10    # Количество окон (или None для всех доступных)<br>
+NORM       = True  # Нормировка фичей (StandardScaler) по train-статам
+        </div>
+    </div>
+
+    <!-- Загрузка данных -->
+    <div class="section">
+        <h2>📂 1. Загрузка и Подготовка Данных</h2>
+        <p>Скрипт работает локально с файлами CSV из папки <code>data/</code>.</p>
+        
+        <h3>Функция <code>pair_features(sym)</code></h3>
+        <p>Это "сердце" подготовки данных для одной валютной пары:</p>
+        <ol>
+            <li>Загружает базовый ТФ (M15).</li>
+            <li>Вычисляет технические индикаторы через <code>q6.FeatureStore</code>.</li>
+            <li><strong>Мульти-ТФ Синтез:</strong> Для каждого бара M15 находит соответствующий бар на старших ТФ (M30, H1, H4) и добавляет их фичи к текущей строке. Это позволяет модели "видеть" старший контекст.</li>
+        </ol>
+        
+        <div class="warning">
+            <strong>Важно:</strong> Данные выравниваются по времени. Если на старшем ТФ нет бара, берется последний известный (forward fill logic via searchsorted).
+        </div>
+    </div>
+
+    <!-- Целевая переменная -->
+    <div class="section">
+        <h2>🎯 2. Формирование Цели (Target)</h2>
+        <p>Мы не предсказываем цену напрямую. Мы предсказываем <strong>направление сглаженного тренда</strong>.</p>
+        
+        <div class="code-block">
+def make_target(close, sigma):<br>
+&nbsp;&nbsp;smoothed = gaussian_filter1d(close, sigma)<br>
+&nbsp;&nbsp;deriv = np.gradient(smoothed)  # Производная (скорость изменения)<br>
+&nbsp;&nbsp;return (deriv > 0).astype(int) # 1 если растет, 0 если падает
+        </div>
+        <p>Это делает модель устойчивой к рыночному шуму.</p>
+    </div>
+
+    <!-- Walk-Forward -->
+    <div class="section">
+        <h2>🔄 3. Walk-Forward Валидация</h2>
+        <p>Чтобы избежать "подгонки" (overfitting), используется скользящее окно:</p>
+        <ul>
+            <li><strong>Train:</strong> Бары <code>[0 ... tr_end]</code>. На них обучается LightGBM.</li>
+            <li><strong>Test:</strong> Бары <code>[tr_end ... te_end]</code>. На них проверяется качество.</li>
+            <li>После теста окно сдвигается на <code>FOLD</code> баров вперед, и процесс повторяется.</li>
+        </ul>
+        <p>Нормализация (<code>StandardScaler</code>) фитится <strong>только</strong> на Train-части, чтобы не заглядывать в будущее.</p>
+    </div>
+
+    <!-- Торговая Логика -->
+    <div class="section">
+        <h2>💰 4. Торговая Логика (Portfolio)</h2>
+        <p>В функции <code>run_fold</code> происходит магия торговли:</p>
+        <ol>
+            <li>Модель предсказывает вероятность роста (<code>predict_proba</code>).</li>
+            <li>Если вероятность > 0.5 → Сигнал <strong>+1</strong> (Long).</li>
+            <li>Если вероятность ≤ 0.5 → Сигнал <strong>-1</strong> (Short).</li>
+            <li><strong>Равновесный портфель:</strong> Доля каждой пары одинакова. Risk Scale = 1 (без дополнительного контроля риска).</li>
+            <li>Доходность портаеля = среднее арифметическое доходностей всех пар с учетом знаков сигналов.</li>
+        </ol>
+    </div>
+
+    <!-- Результаты -->
+    <div class="section">
+        <h2>📊 5. Результаты и Визуализация</h2>
+        <p>В конце скрипт собирает все тестовые отрезки в одну линию эквити.</p>
+        <ul>
+            <li><strong>Metrics:</strong> Считается общая доходность (Return) и максимальная просадка (MaxDD).</li>
+            <li><strong>CSV:</strong> Сохраняется файл <code>wide_equity_base.csv</code> для детального анализа.</li>
+            <li><strong>PNG:</strong> Строится график эквити через <code>matplotlib</code> и сохраняется как <code>wide_equity_base.png</code>.</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        Generated for Wide Brain V2.1 Analysis | Python & Data Science
+    </div>
+</div>
+
+</body>
+</html>

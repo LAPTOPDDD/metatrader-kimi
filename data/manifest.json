@@ -1,0 +1,322 @@
+[
+  {
+    "symbol": "EURUSD",
+    "timeframe": "M15",
+    "bars": 15000,
+    "start": "2026-01-22T10:00:00",
+    "end": "2026-08-28T23:45:00",
+    "file": "EURUSD_M15.csv"
+  },
+  {
+    "symbol": "EURUSD",
+    "timeframe": "M30",
+    "bars": 15000,
+    "start": "2025-06-13T12:00:00",
+    "end": "2026-08-28T23:30:00",
+    "file": "EURUSD_M30.csv"
+  },
+  {
+    "symbol": "EURUSD",
+    "timeframe": "H1",
+    "bars": 15000,
+    "start": "2024-03-29T09:00:00",
+    "end": "2026-08-28T23:00:00",
+    "file": "EURUSD_H1.csv"
+  },
+  {
+    "symbol": "EURUSD",
+    "timeframe": "H4",
+    "bars": 15000,
+    "start": "2017-01-06T08:00:00",
+    "end": "2026-08-28T20:00:00",
+    "file": "EURUSD_H4.csv"
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "M15",
+    "bars": 15000,
+    "start": "2026-01-22T08:30:00",
+    "end": "2026-08-28T23:45:00",
+    "file": "GBPUSD_M15.csv"
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "M30",
+    "bars": 15000,
+    "start": "2025-06-13T10:30:00",
+    "end": "2026-08-28T23:30:00",
+    "file": "GBPUSD_M30.csv"
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "H1",
+    "bars": 15000,
+    "start": "2024-03-29T07:00:00",
+    "end": "2026-08-28T23:00:00",
+    "file": "GBPUSD_H1.csv"
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "H4",
+    "bars": 15000,
+    "start": "2017-01-06T08:00:00",
+    "end": "2026-08-28T20:00:00",
+    "file": "GBPUSD_H4.csv"
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "M15",
+    "bars": 15000,
+    "start": "2026-01-22T09:45:00",
+    "end": "2026-08-28T23:45:00",
+    "file": "USDJPY_M15.csv"
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "M30",
+    "bars": 15000,
+    "start": "2025-06-13T11:30:00",
+    "end": "2026-08-28T23:30:00",
+    "file": "USDJPY_M30.csv"
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "H1",
+    "bars": 15000,
+    "start": "2024-03-29T09:00:00",
+    "end": "2026-08-28T23:00:00",
+    "file": "USDJPY_H1.csv"
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "H4",
+    "bars": 15000,
+    "start": "2017-01-06T12:00:00",
+    "end": "2026-08-28T20:00:00",
+    "file": "USDJPY_H4.csv"
+  },
+  {
+    "symbol": "GBPJPY",
+    "timeframe": "M15",
+    "bars": 15000,
+    "start": "2026-01-22T09:45:00",
+    "end": "2026-08-28T23:45:00",
+    "file": "GBPJPY_M15.csv"
+  },
+  {
+    "symbol": "GBPJPY",
+    "timeframe": "M30",
+    "bars": 15000,
+    "start": "2025-06-13T11:30:00",
+    "end": "2026-08-28T23:30:00",
+    "file": "GBPJPY_M30.csv"
+  },
+  {
+    "symbol": "GBPJPY",
+    "timeframe": "H1",
+    "bars": 15000,
+    "start": "2024-03-29T07:00:00",
+    "end": "2026-08-28T23:00:00",
+    "file": "GBPJPY_H1.csv"
+  },
+  {
+    "symbol": "GBPJPY",
+    "timeframe": "H4",
+    "bars": 15000,
+    "start": "2017-01-05T20:00:00",
+    "end": "2026-08-28T20:00:00",
+    "file": "GBPJPY_H4.csv"
+  },
+  {
+    "symbol": "AUDUSD",
+    "timeframe": "M15",
+    "bars": 15000,
+    "start": "2026-01-22T09:45:00",
+    "end": "2026-08-28T23:45:00",
+    "file": "AUDUSD_M15.csv"
+  },
+  {
+    "symbol": "AUDUSD",
+    "timeframe": "M30",
+    "bars": 15000,
+    "start": "2025-06-13T11:30:00",
+    "end": "2026-08-28T23:30:00",
+    "file": "AUDUSD_M30.csv"
+  },
+  {
+    "symbol": "AUDUSD",
+    "timeframe": "H1",
+    "bars": 15000,
+    "start": "2024-03-29T09:00:00",
+    "end": "2026-08-28T23:00:00",
+    "file": "AUDUSD_H1.csv"
+  },
+  {
+    "symbol": "AUDUSD",
+    "timeframe": "H4",
+    "bars": 15000,
+    "start": "2017-01-06T12:00:00",
+    "end": "2026-08-28T20:00:00",
+    "file": "AUDUSD_H4.csv"
+  },
+  {
+    "symbol": "USDCHF",
+    "timeframe": "M15",
+    "bars": 15000,
+    "start": "2026-01-22T09:45:00",
+    "end": "2026-08-28T23:45:00",
+    "file": "USDCHF_M15.csv"
+  },
+  {
+    "symbol": "USDCHF",
+    "timeframe": "M30",
+    "bars": 15000,
+    "start": "2025-06-13T11:30:00",
+    "end": "2026-08-28T23:30:00",
+    "file": "USDCHF_M30.csv"
+  },
+  {
+    "symbol": "USDCHF",
+    "timeframe": "H1",
+    "bars": 15000,
+    "start": "2024-03-29T08:00:00",
+    "end": "2026-08-28T23:00:00",
+    "file": "USDCHF_H1.csv"
+  },
+  {
+    "symbol": "USDCHF",
+    "timeframe": "H4",
+    "bars": 15000,
+    "start": "2017-01-06T08:00:00",
+    "end": "2026-08-28T20:00:00",
+    "file": "USDCHF_H4.csv"
+  },
+  {
+    "symbol": "NZDUSD",
+    "timeframe": "M15",
+    "bars": 15000,
+    "start": "2026-01-22T09:45:00",
+    "end": "2026-08-28T23:45:00",
+    "file": "NZDUSD_M15.csv"
+  },
+  {
+    "symbol": "NZDUSD",
+    "timeframe": "M30",
+    "bars": 15000,
+    "start": "2025-06-13T11:30:00",
+    "end": "2026-08-28T23:30:00",
+    "file": "NZDUSD_M30.csv"
+  },
+  {
+    "symbol": "NZDUSD",
+    "timeframe": "H1",
+    "bars": 15000,
+    "start": "2024-03-29T08:00:00",
+    "end": "2026-08-28T23:00:00",
+    "file": "NZDUSD_H1.csv"
+  },
+  {
+    "symbol": "NZDUSD",
+    "timeframe": "H4",
+    "bars": 15000,
+    "start": "2017-01-06T16:00:00",
+    "end": "2026-08-28T20:00:00",
+    "file": "NZDUSD_H4.csv"
+  },
+  {
+    "symbol": "USDCAD",
+    "timeframe": "M15",
+    "bars": 15000,
+    "start": "2026-01-02T23:00:00",
+    "end": "2026-08-28T23:45:00",
+    "file": "USDCAD_M15.csv"
+  },
+  {
+    "symbol": "USDCAD",
+    "timeframe": "M30",
+    "bars": 15000,
+    "start": "2025-06-13T11:30:00",
+    "end": "2026-08-28T23:30:00",
+    "file": "USDCAD_M30.csv"
+  },
+  {
+    "symbol": "USDCAD",
+    "timeframe": "H1",
+    "bars": 15000,
+    "start": "2024-03-29T08:00:00",
+    "end": "2026-08-28T23:00:00",
+    "file": "USDCAD_H1.csv"
+  },
+  {
+    "symbol": "USDCAD",
+    "timeframe": "H4",
+    "bars": 15000,
+    "start": "2017-01-06T08:00:00",
+    "end": "2026-08-28T20:00:00",
+    "file": "USDCAD_H4.csv"
+  },
+  {
+    "symbol": "EURJPY",
+    "timeframe": "M15",
+    "bars": 15000,
+    "start": "2025-12-29T20:45:00",
+    "end": "2026-08-28T23:45:00",
+    "file": "EURJPY_M15.csv"
+  },
+  {
+    "symbol": "EURJPY",
+    "timeframe": "M30",
+    "bars": 15000,
+    "start": "2025-06-13T11:30:00",
+    "end": "2026-08-28T23:30:00",
+    "file": "EURJPY_M30.csv"
+  },
+  {
+    "symbol": "EURJPY",
+    "timeframe": "H1",
+    "bars": 15000,
+    "start": "2024-03-29T08:00:00",
+    "end": "2026-08-28T23:00:00",
+    "file": "EURJPY_H1.csv"
+  },
+  {
+    "symbol": "EURJPY",
+    "timeframe": "H4",
+    "bars": 15000,
+    "start": "2017-01-06T08:00:00",
+    "end": "2026-08-28T20:00:00",
+    "file": "EURJPY_H4.csv"
+  },
+  {
+    "symbol": "AUDJPY",
+    "timeframe": "M15",
+    "bars": 15000,
+    "start": "2025-12-29T03:00:00",
+    "end": "2026-08-28T23:45:00",
+    "file": "AUDJPY_M15.csv"
+  },
+  {
+    "symbol": "AUDJPY",
+    "timeframe": "M30",
+    "bars": 15000,
+    "start": "2025-06-13T11:30:00",
+    "end": "2026-08-28T23:30:00",
+    "file": "AUDJPY_M30.csv"
+  },
+  {
+    "symbol": "AUDJPY",
+    "timeframe": "H1",
+    "bars": 15000,
+    "start": "2024-03-29T07:00:00",
+    "end": "2026-08-28T23:00:00",
+    "file": "AUDJPY_H1.csv"
+  },
+  {
+    "symbol": "AUDJPY",
+    "timeframe": "H4",
+    "bars": 15000,
+    "start": "2017-01-06T04:00:00",
+    "end": "2026-08-28T20:00:00",
+    "file": "AUDJPY_H4.csv"
+  }
+]

@@ -1,0 +1,1022 @@
+[
+  {
+    "symbol": "AUDCHF",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.49079959852793,
+    "total_profit": 17419.209999999548,
+    "max_dd": 6227.489999999776,
+    "safety_score": 2.797147807543677,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDCAD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.62462361993978,
+    "total_profit": 27507.21000000076,
+    "max_dd": 17425.060000000056,
+    "safety_score": 1.57860059018452,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NAS100",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.65807962529274,
+    "total_profit": 4632.438999999948,
+    "max_dd": 2990.3339999998407,
+    "safety_score": 1.5491376548573486,
+    "contract_size": 1
+  },
+  {
+    "symbol": "XAGUSD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 97.12278353964537,
+    "total_profit": 85854.75000000493,
+    "max_dd": 57085.9499999979,
+    "safety_score": 1.5039558770592079,
+    "contract_size": 5000
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.59116761458682,
+    "total_profit": 3124784.000000513,
+    "max_dd": 2101928.9999999874,
+    "safety_score": 1.4866268080418186,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDNZD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.52425560388089,
+    "total_profit": 23085.049999998864,
+    "max_dd": 16904.45999999977,
+    "safety_score": 1.3656188958416404,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "US30",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 97.49079959852793,
+    "total_profit": 2262.521999999638,
+    "max_dd": 1788.9979999999614,
+    "safety_score": 1.2646867128972121,
+    "contract_size": 1
+  },
+  {
+    "symbol": "AUDCHF",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.9220475075276,
+    "total_profit": 2209.4600000012865,
+    "max_dd": 1952.4400000004516,
+    "safety_score": 1.131640408924615,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURJPY",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 97.32351957176313,
+    "total_profit": 164591.9999997636,
+    "max_dd": 147588.9999999972,
+    "safety_score": 1.1152050627063448,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPJPY",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.52425560388089,
+    "total_profit": 7117788.99999996,
+    "max_dd": 6406883.000000095,
+    "safety_score": 1.1109597287791668,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.8588156574105,
+    "total_profit": 475691.00000033394,
+    "max_dd": 435063.0000000057,
+    "safety_score": 1.0933841765452996,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDCHF",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.39043158246905,
+    "total_profit": 6982.819999999723,
+    "max_dd": 6393.599999999873,
+    "safety_score": 1.092157782782761,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDJPY",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.72499163599866,
+    "total_profit": 3901933.000000002,
+    "max_dd": 3926787.9999999935,
+    "safety_score": 0.9936703993187328,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GER40",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.35697557711609,
+    "total_profit": 7453.08500000012,
+    "max_dd": 8498.701000000056,
+    "safety_score": 0.8769675506880489,
+    "contract_size": 1
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.49079959852793,
+    "total_profit": 17073.809999998997,
+    "max_dd": 21177.64000000059,
+    "safety_score": 0.8062187288101281,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURUSD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.39043158246905,
+    "total_profit": 3936.3800000070246,
+    "max_dd": 5095.0999999995265,
+    "safety_score": 0.7725814998738769,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURCHF",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.39043158246905,
+    "total_profit": 2800.550000000714,
+    "max_dd": 3998.660000000613,
+    "safety_score": 0.700372124661833,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURGBP",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 96.88859150217463,
+    "total_profit": 3231.3000000011925,
+    "max_dd": 5500.709999999739,
+    "safety_score": 0.5874332586159506,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPNZD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.45734359317497,
+    "total_profit": 12197.790000000474,
+    "max_dd": 25607.83000000001,
+    "safety_score": 0.4763304817315825,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPAUD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.08932753429241,
+    "total_profit": 1983.9899999929119,
+    "max_dd": 5019.920000000177,
+    "safety_score": 0.3952234298540299,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDJPY",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.49079959852793,
+    "total_profit": 1038944.0000000452,
+    "max_dd": 2930581.0000000102,
+    "safety_score": 0.35451809726468625,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 97.25660756105721,
+    "total_profit": 74375.00000053931,
+    "max_dd": 217402.00000006796,
+    "safety_score": 0.34210816828049445,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "CADJPY",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.32351957176313,
+    "total_profit": 276712.9999997048,
+    "max_dd": 916108.9999999765,
+    "safety_score": 0.3020524850205728,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "USDCAD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.08932753429241,
+    "total_profit": 6365.430000000306,
+    "max_dd": 21383.30000000073,
+    "safety_score": 0.2976823034798225,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDCAD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.12278353964537,
+    "total_profit": 2101.249999999856,
+    "max_dd": 7687.059999999785,
+    "safety_score": 0.27334897867323976,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "US30",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.39043158246905,
+    "total_profit": 463.24600000013646,
+    "max_dd": 1822.5180000001546,
+    "safety_score": 0.2541791082448004,
+    "contract_size": 1
+  },
+  {
+    "symbol": "EURCHF",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.68785547005687,
+    "total_profit": 336.42999999999535,
+    "max_dd": 1554.460000000092,
+    "safety_score": 0.21642885632308034,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "XAUEUR",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 97.18969555035129,
+    "total_profit": 8953.509999998028,
+    "max_dd": 43016.48999999995,
+    "safety_score": 0.20814134300585752,
+    "contract_size": 100
+  },
+  {
+    "symbol": "AUDUSD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.6915356306457,
+    "total_profit": 3872.0899999985363,
+    "max_dd": 23777.869999999937,
+    "safety_score": 0.1628442749497136,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "CHFJPY",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.39043158246905,
+    "total_profit": 128738.99999977199,
+    "max_dd": 795569.9999998785,
+    "safety_score": 0.16181982729337663,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURUSD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 97.49079959852793,
+    "total_profit": 183.91000000053435,
+    "max_dd": 1351.4799999998559,
+    "safety_score": 0.1360804451420324,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDUSD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.85513549682167,
+    "total_profit": 425.04000000091116,
+    "max_dd": 4691.29000000022,
+    "safety_score": 0.09060194530734429,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "USDCHF",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.05587152893943,
+    "total_profit": 122.47999999891489,
+    "max_dd": 2535.8400000000765,
+    "safety_score": 0.04829957725996561,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "CADCHF",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 96.95550351288055,
+    "total_profit": -316.4000000017385,
+    "max_dd": 6650.479999999744,
+    "safety_score": -0.04757551334666831,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPCAD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.38675142188022,
+    "total_profit": -225.6000000025198,
+    "max_dd": 3726.2399999993268,
+    "safety_score": -0.060543604277384325,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURUSD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.18969555035129,
+    "total_profit": -1384.4299999983234,
+    "max_dd": 22774.880000000405,
+    "safety_score": -0.06078758702563082,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDCAD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.95550351288055,
+    "total_profit": -385.1300000007078,
+    "max_dd": 2933.460000000505,
+    "safety_score": -0.13128864889947078,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.68785547005687,
+    "total_profit": -7684.229999997811,
+    "max_dd": 53255.29000000272,
+    "safety_score": -0.14429045452568973,
+    "contract_size": 100
+  },
+  {
+    "symbol": "XAGUSD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.25660756105721,
+    "total_profit": -97256.29999998792,
+    "max_dd": 530353.3000000017,
+    "safety_score": -0.18338021088958553,
+    "contract_size": 5000
+  },
+  {
+    "symbol": "UK100",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 97.22315155570425,
+    "total_profit": -148.60300000008357,
+    "max_dd": 679.8179999999647,
+    "safety_score": -0.21859232912351728,
+    "contract_size": 1
+  },
+  {
+    "symbol": "GER40",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.587487453998,
+    "total_profit": -220.58399999969436,
+    "max_dd": 813.739999999998,
+    "safety_score": -0.2710742989157408,
+    "contract_size": 1
+  },
+  {
+    "symbol": "NZDUSD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.29006356641017,
+    "total_profit": -959.8299999999741,
+    "max_dd": 3476.300000000133,
+    "safety_score": -0.27610678019731827,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURJPY",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.45734359317497,
+    "total_profit": -458799.99999983364,
+    "max_dd": 1437129.999999936,
+    "safety_score": -0.31924738889303966,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDCHF",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.62094345935095,
+    "total_profit": -1052.259999999722,
+    "max_dd": 3106.360000000038,
+    "safety_score": -0.3387437386522197,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPCAD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.55771160923385,
+    "total_profit": -8311.430000002003,
+    "max_dd": 23754.220000000136,
+    "safety_score": -0.34989277694666276,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "XAUUSD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.72131147540983,
+    "total_profit": -19148.989999991565,
+    "max_dd": 53929.510000000926,
+    "safety_score": -0.3550744295653945,
+    "contract_size": 100
+  },
+  {
+    "symbol": "AUDCAD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 97.05587152893943,
+    "total_profit": -730.6500000007021,
+    "max_dd": 2029.5799999999472,
+    "safety_score": -0.3600005912556889,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDUSD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.98895951823351,
+    "total_profit": -881.6500000001774,
+    "max_dd": 2271.549999999548,
+    "safety_score": -0.38812704981195784,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDUSD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 97.18969555035129,
+    "total_profit": -493.6399999975676,
+    "max_dd": 1180.1599999998707,
+    "safety_score": -0.41828226680926456,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPCAD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.18969555035129,
+    "total_profit": -8292.339999998296,
+    "max_dd": 19405.599999998354,
+    "safety_score": -0.42731685698968336,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURAUD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 96.9220475075276,
+    "total_profit": -13021.700000002435,
+    "max_dd": 26505.829999999856,
+    "safety_score": -0.4912768247590249,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPNZD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.52057544329207,
+    "total_profit": -4390.14999999366,
+    "max_dd": 8385.309999999678,
+    "safety_score": -0.5235524983565102,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURGBP",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.52057544329207,
+    "total_profit": -1418.9199999978157,
+    "max_dd": 2691.6300000003994,
+    "safety_score": -0.527160122304182,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPJPY",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.29006356641017,
+    "total_profit": -480760.9999993608,
+    "max_dd": 799062.0000000431,
+    "safety_score": -0.601656692471091,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "CHFJPY",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.39043158246905,
+    "total_profit": -1788469.0000001425,
+    "max_dd": 2820681.999999972,
+    "safety_score": -0.634055522742429,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "USDCAD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.08932753429241,
+    "total_profit": -11692.150000003861,
+    "max_dd": 17292.150000000136,
+    "safety_score": -0.6761536304047657,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDCHF",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.25292740046838,
+    "total_profit": -4274.299999999451,
+    "max_dd": 6115.050000000016,
+    "safety_score": -0.6989803844611966,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "XAGUSD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.05587152893943,
+    "total_profit": -45967.750000000655,
+    "max_dd": 64533.04999999986,
+    "safety_score": -0.71231330302846,
+    "contract_size": 5000
+  },
+  {
+    "symbol": "CADJPY",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.88859150217463,
+    "total_profit": -253335.99999993274,
+    "max_dd": 344864.00000000617,
+    "safety_score": -0.7345968265749055,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURGBP",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.35329541652726,
+    "total_profit": -1391.7300000002854,
+    "max_dd": 1867.3199999998997,
+    "safety_score": -0.7453087847826618,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "USDCHF",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.08932753429241,
+    "total_profit": -7974.630000000367,
+    "max_dd": 10411.379999999599,
+    "safety_score": -0.7659532165765416,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "CADJPY",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.82167949146871,
+    "total_profit": -141456.00000005026,
+    "max_dd": 178303.00000003574,
+    "safety_score": -0.7933461579447453,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "UK100",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 96.72131147540983,
+    "total_profit": -2885.8440000001033,
+    "max_dd": 3454.086999999975,
+    "safety_score": -0.8354867726262032,
+    "contract_size": 1
+  },
+  {
+    "symbol": "UK100",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.85513549682167,
+    "total_profit": -852.4019999998953,
+    "max_dd": 1013.2649999999994,
+    "safety_score": -0.8412429127621065,
+    "contract_size": 1
+  },
+  {
+    "symbol": "GBPAUD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 96.98895951823351,
+    "total_profit": -14074.520000002107,
+    "max_dd": 15637.500000000195,
+    "safety_score": -0.9000492406076375,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDCAD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.7547674807628,
+    "total_profit": -6065.630000000818,
+    "max_dd": 6404.169999999903,
+    "safety_score": -0.9471375681783759,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDCHF",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.78822348611575,
+    "total_profit": -801.1700000021169,
+    "max_dd": 819.3700000005374,
+    "safety_score": -0.9777878125896621,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.72131147540983,
+    "total_profit": -3621.1899999985153,
+    "max_dd": 3498.9000000002616,
+    "safety_score": -1.0349509845946567,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "CADCHF",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.82167949146871,
+    "total_profit": -5363.140000001207,
+    "max_dd": 4997.8399999997155,
+    "safety_score": -1.073091575560945,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDJPY",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.12278353964537,
+    "total_profit": -335645.00000005413,
+    "max_dd": 309120.9999999631,
+    "safety_score": -1.085804587847782,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDCAD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.15623954499833,
+    "total_profit": -20044.170000000384,
+    "max_dd": 18444.010000000042,
+    "safety_score": -1.0867577061604465,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURNZD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.39043158246905,
+    "total_profit": -24253.22999999791,
+    "max_dd": 21563.850000000366,
+    "safety_score": -1.1247170611925745,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "US30",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 96.88859150217463,
+    "total_profit": -18073.66899999908,
+    "max_dd": 15988.402000000027,
+    "safety_score": -1.1304237284000647,
+    "contract_size": 1
+  },
+  {
+    "symbol": "EURCHF",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 96.65439946470391,
+    "total_profit": -7116.700000001357,
+    "max_dd": 6134.339999999549,
+    "safety_score": -1.1601411072750907,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "XAUEUR",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.32351957176313,
+    "total_profit": -317953.0799999933,
+    "max_dd": 257634.5799999995,
+    "safety_score": -1.2341242390675737,
+    "contract_size": 100
+  },
+  {
+    "symbol": "CADCHF",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.42020742723318,
+    "total_profit": -2581.740000000728,
+    "max_dd": 2083.250000000279,
+    "safety_score": -1.2392847713910389,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GER40",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.52057544329207,
+    "total_profit": -2734.430000000117,
+    "max_dd": 2200.1340000000673,
+    "safety_score": -1.2428470265902138,
+    "contract_size": 1
+  },
+  {
+    "symbol": "USDCAD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.25292740046838,
+    "total_profit": -4865.649999998091,
+    "max_dd": 3909.8199999994786,
+    "safety_score": -1.244469054841077,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURCAD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.21947139511542,
+    "total_profit": -6096.4299999999475,
+    "max_dd": 4675.149999999566,
+    "safety_score": -1.3040073580527927,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "XAUEUR",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.15623954499833,
+    "total_profit": -65959.95999999404,
+    "max_dd": 50292.609999999986,
+    "safety_score": -1.3115238998332768,
+    "contract_size": 100
+  },
+  {
+    "symbol": "NAS100",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 96.82167949146871,
+    "total_profit": -19204.86399999995,
+    "max_dd": 14386.568999999938,
+    "safety_score": -1.334916198573825,
+    "contract_size": 1
+  },
+  {
+    "symbol": "GBPAUD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.28638340582134,
+    "total_profit": -5012.279999992523,
+    "max_dd": 3712.659999999534,
+    "safety_score": -1.3500509068950972,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDUSD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.29006356641017,
+    "total_profit": -24226.920000001315,
+    "max_dd": 16809.030000000388,
+    "safety_score": -1.44130387059817,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NAS100",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.78822348611575,
+    "total_profit": -2804.6740000002856,
+    "max_dd": 1825.26800000004,
+    "safety_score": -1.5365820252150502,
+    "contract_size": 1
+  },
+  {
+    "symbol": "EURNZD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.42020742723318,
+    "total_profit": -5191.300000000409,
+    "max_dd": 3276.510000000433,
+    "safety_score": -1.584399254084292,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "XAUUSD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 97.45734359317497,
+    "total_profit": -638751.3200000022,
+    "max_dd": 398914.22999999847,
+    "safety_score": -1.601224704368166,
+    "contract_size": 100
+  },
+  {
+    "symbol": "GBPJPY",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.65439946470391,
+    "total_profit": -480164.0000006213,
+    "max_dd": 295439.9999999688,
+    "safety_score": -1.6252504738717575,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDJPY",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.08564737370358,
+    "total_profit": -511325.00000006356,
+    "max_dd": 296713.0000000011,
+    "safety_score": -1.7232982713937766,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURAUD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.9220475075276,
+    "total_profit": -7804.520000002844,
+    "max_dd": 4177.699999998942,
+    "safety_score": -1.8681379706548629,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURJPY",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.68785547005687,
+    "total_profit": -872689.0000002065,
+    "max_dd": 464400.99999999616,
+    "safety_score": -1.8791712334818695,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURCAD",
+    "timeframe": "H1",
+    "n_cycles": 2989,
+    "win_rate": 96.55403144864503,
+    "total_profit": -23220.570000003387,
+    "max_dd": 11430.10000000085,
+    "safety_score": -2.031528158108998,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURAUD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.4871194379391,
+    "total_profit": -4090.8900000029544,
+    "max_dd": 1996.2099999988804,
+    "safety_score": -2.049328477467425,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.25292740046838,
+    "total_profit": -4999.509999997731,
+    "max_dd": 2236.539999999639,
+    "safety_score": -2.2353769662060765,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "CHFJPY",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.18601538976246,
+    "total_profit": -839656.9999997299,
+    "max_dd": 364670.00000015425,
+    "safety_score": -2.302511860036128,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURCAD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 96.95550351288055,
+    "total_profit": -3483.439999997691,
+    "max_dd": 1498.5900000001475,
+    "safety_score": -2.324478342973961,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDJPY",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 97.22315155570425,
+    "total_profit": -943061.0000002019,
+    "max_dd": 383146.0000000494,
+    "safety_score": -2.4613619873366295,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDNZD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 95.95182335229173,
+    "total_profit": -5973.860000003707,
+    "max_dd": 2358.9499999989785,
+    "safety_score": -2.5324233239391654,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "EURNZD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.65439946470391,
+    "total_profit": -18925.16000000094,
+    "max_dd": 7059.249999999853,
+    "safety_score": -2.6809023621491423,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "NZDJPY",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 95.81799933087989,
+    "total_profit": -556908.0000000724,
+    "max_dd": 177329.99999995923,
+    "safety_score": -3.140517678904869,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "USDCHF",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 95.81799933087989,
+    "total_profit": -6600.9000000009,
+    "max_dd": 2048.990000000129,
+    "safety_score": -3.22153841648836,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "GBPNZD",
+    "timeframe": "M1",
+    "n_cycles": 2989,
+    "win_rate": 95.5503512880562,
+    "total_profit": -16344.80999999955,
+    "max_dd": 4568.439999998924,
+    "safety_score": -3.577766152122694,
+    "contract_size": 100000.0
+  },
+  {
+    "symbol": "AUDNZD",
+    "timeframe": "M5",
+    "n_cycles": 2989,
+    "win_rate": 96.18601538976246,
+    "total_profit": -10049.250000000313,
+    "max_dd": 2779.170000001037,
+    "safety_score": -3.615917702046497,
+    "contract_size": 100000.0
+  }
+]

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wide Brain V2.1 — как это работает</title>
+<style>
+  :root{
+    --bg:#0b0f14; --card:#141b24; --card2:#1b2530; --line:#26323f;
+    --txt:#e6edf3; --dim:#9fb0c0; --grn:#39d98a; --grn2:#1f9d63;
+    --blue:#4ea8ff; --amber:#ffcf5c; --red:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#070b10,#0b0f14 240px);
+       color:var(--txt);font:15px/1.6 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:32px 22px 80px}
+  header.hero{padding:38px 30px;border-radius:18px;
+       background:radial-gradient(1200px 300px at 20% -40%,rgba(57,217,138,.18),transparent),
+                  linear-gradient(135deg,#10261c,#0e1620);
+       border:1px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  header.hero h1{margin:0;font-size:34px;letter-spacing:.3px}
+  header.hero h1 b{color:var(--grn)}
+  header.hero p{margin:10px 0 0;color:var(--dim);max-width:680px}
+  .tag{display:inline-block;margin-top:16px;padding:5px 12px;border-radius:999px;
+       background:rgba(57,217,138,.12);color:var(--grn);border:1px solid rgba(57,217,138,.35);
+       font-size:13px;font-weight:600}
+  section{margin-top:30px;background:var(--card);border:1px solid var(--line);
+       border-radius:16px;padding:24px 26px}
+  h2{margin:0 0 14px;font-size:21px;display:flex;align-items:center;gap:10px}
+  h2 .n{width:30px;height:30px;border-radius:8px;background:var(--grn2);color:#04130b;
+       display:grid;place-items:center;font-weight:800;font-size:15px}
+  h3{color:var(--blue);margin:18px 0 8px;font-size:16px}
+  p{color:var(--txt)} .dim{color:var(--dim)}
+  code{background:#0c1219;padding:2px 7px;border-radius:6px;color:var(--amber);
+       font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:#0a0f15;border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+       overflow:auto;font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#cfe3d6}
+  pre .c{color:#5f7488} pre .k{color:#7fd1ff} pre .v{color:#ffd479}
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:10px;margin:6px 0 4px}
+  .box{flex:1 1 140px;min-width:130px;background:var(--card2);border:1px solid var(--line);
+       border-radius:12px;padding:14px;position:relative}
+  .box b{color:var(--grn);display:block;margin-bottom:4px;font-size:14px}
+  .box small{color:var(--dim)}
+  .arrow{display:grid;place-items:center;color:var(--grn);font-size:22px;flex:0 0 22px}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left}
+  th{color:var(--dim);font-weight:600;background:#0e151d}
+  td .green{color:var(--grn);font-weight:700} td .red{color:var(--red);font-weight:700}
+  .callout{border-left:4px solid var(--amber);background:rgba(255,207,92,.07);
+       padding:14px 16px;border-radius:0 12px 12px 0;color:#f3e6c4;margin-top:14px}
+  .callout b{color:var(--amber)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  img.eq{width:100%;border-radius:12px;border:1px solid var(--line);margin-top:8px;background:#fff}
+  ul{margin:8px 0 8px 2px;padding-left:20px} li{margin:5px 0}
+  a{color:var(--blue)}
+  footer{margin-top:26px;color:var(--dim);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>🧠 Wide Brain <b>V2.1</b></h1>
+    <p>Портфельный «широкий мозг» на 10 валютных парах и 4 таймфреймах.
+       Честная walk-forward симуляция на исторических данных без терминала.
+       Эта версия — <b>абляция</b>: убраны кросс-активные «головы» (Stage&nbsp;2) и
+       мета-контроллер риска. Оставлена только <b>база</b>.</p>
+    <span class="tag">только база · Stage-1 · scale = 1 · без мета</span>
+  </header>
+
+  <!-- СХЕМА -->
+  <section>
+    <h2><span class="n">≈</span>Поток данных</h2>
+    <div class="flow">
+      <div class="box"><b>1 · Данные</b><small>10 пар × 4 ТФ<br>offline CSV</small></div>
+      <div class="arrow">→</div>
+      <div class="box"><b>2 · Фичи</b><small>QWEN6 × все ТФ<br>нормировка</small></div>
+      <div class="arrow">→</div>
+      <div class="box"><b>3 · Цель</b><small>знак наклона<br>сглаж. цены</small></div>
+      <div class="arrow">→</div>
+      <div class="box"><b>4 · Stage-1</b><small>LightGBM<br>на своих фичах</small></div>
+      <div class="arrow">→</div>
+      <div class="box"><b>5 · Сигнал</b><small>+1 / −1</small></div>
+      <div class="arrow">→</div>
+      <div class="box"><b>6 · Портфель</b><small>среднее по парам<br>scale = 1</small></div>
+      <div class="arrow">→</div>
+      <div class="box"><b>7 · Walk-fwd</b><small>бар за баром<br>→ эквити</small></div>
+    </div>
+    <p class="dim" style="margin-top:14px">Решения принимаются на сетке <code>M15</code>. Младшие/старшие ТФ
+       (<code>M30, H1, H4</code>) не торгуются отдельно — они лишь подшиваются к M15-бару как контекстные фичи.</p>
+  </section>
+
+  <!-- ДЕТАЛЬНО -->
+  <section>
+    <h2><span class="n">1</span>Данные и мульти-ТФ контекст</h2>
+    <p>Скрипт <code>download_data.py</code> один раз скачивает 10 пар × 4 таймфрейма в <code>data/</code>
+       (40 CSV, по ~14950 M15-баров). Для каждой пары старшие ТФ выравниваются на M15-сетку
+       форвард-заполнением — берётся последний <i>уже закрытый</i> старший бар ≤ текущего M15.
+       Никакой утечки будущего.</p>
+    <pre><span class="c"># выравнивание H1/H4 на M15-бары (по времени)</span>
+pos = np.searchsorted(t2, t_base, side=<span class="v">"right"</span>) - <span class="v">1</span>
+pos = np.clip(pos, <span class="v">0</span>, len(t2) - <span class="v">1</span>)
+fM15 = np.concatenate([fM15, f2[pos]], axis=<span class="v">1</span>)</pre>
+
+    <h2><span class="n">2</span>Фичи (те же, что в QWEN6)</h2>
+    <p>11 причинно-чистых фичей на каждый ТФ, нормируются по паре на train-статистике:</p>
+    <p><code>rsi_14</code> · <code>macd</code> · <code>mom_6 / mom_12 / mom_24</code> ·
+       <code>atr_14</code> · <code>ma_20 / ma_50</code> · <code>body</code> · <code>hl_range</code> · <code>vol_ratio</code></p>
+
+    <h2><span class="n">3</span>Цель — знак наклона сглаженной цены</h2>
+    <p>Цена сглаживается Гауссовым фильтром, берётся производная, и метка —
+       <b>пойдёт ли сглаженная цена вверх</b>:</p>
+    <pre>sm = gaussian_filter1d(close, <span class="v">SIGMA</span>, mode=<span class="v">"reflect"</span>)
+y  = (np.gradient(sm) &gt; <span class="v">0</span>).astype(<span class="v">int</span>)   <span class="c"># 1 = вверх, 0 = вниз</span></pre>
+    <p class="dim">Центрированный Гаусс «знает будущее» — это допустимо: метка-учитель может смотреть вперёд.
+       На <b>входе</b> модели в баре <code>t</code> только прошлое, поэтому решение честное.</p>
+
+    <h2><span class="n">4</span>Stage-1 — свой мозг на каждую пару</h2>
+    <p>Для пары <code>P</code> обучается свой <code>LightGBM</code> на её собственных мульти-ТФ фичах
+       по окну <code>[0, BARS_TRAIN)</code>. Классы балансируются весами
+       (<code>sample_weight = n_neg/n_pos</code>). Предсказывает вероятность «вверх».</p>
+
+    <h2><span class="n">5</span>Сигнал</h2>
+    <pre>sig = (proba &gt; <span class="v">0.5</span>).astype(<span class="v">int</span>) * <span class="v">2</span> - <span class="v">1</span>   <span class="c"># +1 (BUY) или −1 (SELL), нейтрали нет</span></pre>
+    <p>Нейтральной зоны нет: система всегда в позиции, сигнал переворачивается, когда вероятность
+       перепрыгивает порог 0.5.</p>
+
+    <h2><span class="n">6</span>Портфель и Walk-forward</h2>
+    <p>В каждом M15-баре позиция по паре = <code>signal × scale</code>, где <code>scale = 1</code>
+       (риск-контроллер в V2.1 отключён). Доходность фиксируется на <b>следующем закрытии</b>:
+       <code>ret = close[t+1]/close[t] − 1</code>. Портфельная доходность бара — среднее по 10 парам.
+       Окно обучения расширяется, тест «прокручивается» блоками <code>FOLD</code> баров.</p>
+    <pre><span class="c"># решение на баре t, реализация t → t+1</span>
+pr = np.mean(sig_test[t] * ret_test[t])      <span class="c"># равновес, scale = 1</span>
+eq = np.cumprod(<span class="v">1</span> + pr_all)</pre>
+  </section>
+
+  <!-- РЕЗУЛЬТАТ -->
+  <section>
+    <h2><span class="n">★</span>Результат на этом снимке рынка</h2>
+    <table>
+      <tr><th>Версия</th><th>Внутри</th><th>Доходность</th><th>Просадка</th></tr>
+      <tr><td><b>V2.1 (здесь)</b></td><td>Stage-1, без мета</td><td class="green">50.7%</td><td>−0.2%</td></tr>
+      <tr><td>V2 «Base»</td><td>Stage-2 (головы) + scale 1</td><td>47.7%</td><td>−0.2%</td></tr>
+      <tr><td>V2 «Wide»</td><td>Stage-2 + risk-off мета</td><td class="red">15.5%</td><td>−0.1%</td></tr>
+      <tr><td>V2-super-base</td><td>одна пара EURUSD M15</td><td>0.46%</td><td class="red">−1.86%</td></tr>
+    </table>
+    <img class="eq" src="wide_equity_base.png" alt="Портфельная эквити Wide Brain V2.1">
+
+    <div class="callout">
+      <b>Честный вывод.</b> На этом куске данных <b>все усложнения только ухудшали</b>:
+      кросс-активные «головы» (Stage-2) чуть снизили базу (47.7% &lt; 50.7%), а мета-контроллер
+      её почти задавил (15.5%). Причина — просадок у 10-парного портфеля почти нет
+      (−0.2%), «шторма», от которого прячется мета, просто не было. А одна пара (EURUSD)
+      дала просадку −1.86%: <b>низкая просадка рождается диверсификацией, а не умностью модели.</b>
+    </div>
+  </section>
+
+  <!-- КОНФИГ -->
+  <section>
+    <h2><span class="n">⚙</span>Конфиг (играйте в начале скрипта)</h2>
+    <div class="grid2">
+      <div><h3>Параметры</h3>
+        <pre>SIGMA      = <span class="v">1.5</span>     <span class="c"># сглаживание цели</span>
+BASE_TF    = <span class="v">"M15"</span>
+HIGHER     = [<span class="v">"M30","H1","H4"</span>]
+BARS_TRAIN = <span class="v">10000</span>   <span class="c"># размер обучения</span>
+FOLD       = <span class="v">900</span>     <span class="c"># шаг теста</span>
+N_FOLDS    = <span class="v">None</span>    <span class="c"># сколько окон</span>
+NORM       = <span class="v">True</span>
+PAIRS      = <span class="v">None</span>    <span class="c"># все 10</span></pre>
+      </div>
+      <div><h3>Файлы</h3>
+        <ul>
+          <li><code>download_data.py</code> — выгрузка оффлайн-данных</li>
+          <li><code>wide_brainV2.1.py</code> — сама система (база)</li>
+          <li><code>data/*.csv</code> — 40 файлов котировок</li>
+          <li><code>wide_equity_base.png</code> — график эквити</li>
+          <li><code>система-в-единм-файле-QWEN6.py</code> — источник фичей/модели</li>
+        </ul>
+        <p class="dim">Запуск:<br><code>&nbsp;.venv\Scripts\python.exe wide_brainV2.1.py</code></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>Wide Brain V2.1 · честная walk-forward симуляция · без терминала, на оффлайн-данных</footer>
+</div>
+</body>
+</html>

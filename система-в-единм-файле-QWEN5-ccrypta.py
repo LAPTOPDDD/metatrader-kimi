@@ -1,0 +1,959 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+ПРОФЕССИОНАЛЬНАЯ ТОРГОВАЯ СИСТЕМА v5.0 (FIXED)
+===============================================
+Исправлена ошибка: module 'MetaTrader5' has no attribute 'SYMBOL_FILLING_FOK'
+"""
+
+import MetaTrader5 as mt5
+import pandas as pd
+import numpy as np
+import lightgbm as lgb
+import optuna
+import matplotlib.pyplot as plt
+import sys
+import json
+import time
+import warnings
+from dataclasses import dataclass
+from scipy.ndimage import gaussian_filter1d
+from typing import List, Dict, Tuple, Optional
+
+try:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    if hasattr(sys.stderr, "reconfigure"):
+        sys.stderr.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
+warnings.filterwarnings('ignore')
+optuna.logging.set_verbosity(optuna.logging.WARNING)
+
+# ======================== КОНФИГ =========================
+NOPT = 1000
+NFWD = 500
+LOT = 0.01
+MAGIC_BASE = 100_000
+"""
+PAIRS = [
+    "AAVE", "BITCOIN", "BITCOIN CASH", "CARDANO", "CHAINLINK", "DOGECOIN",
+    "ETHEREUM", "LITECOIN", "POLKADOT", "POLYGON", "RIPPLE", "SOLANA",
+    "STELLAR", "TRON", "UNISWAP", "AVALANCHE", "AXS", "BNB", "COSMOS",
+    "PYTH", "ILLUVIUM", "INJ", "RENDER", "TRUMP", "SUI", "HEDERA", "NEAR",
+    "APTOS", "ARBITRUM", "PAXG", "GRAM"
+]
+"""
+PAIRS = [
+    "AAVE", "BITCOIN", "BITCOIN CASH", "CARDANO", "CHAINLINK", "DOGECOIN"
+    
+]
+
+TIMEFRAMES = ["M15", "M30", "H1", "H4"]
+
+LGB_PARAMS = dict(
+    n_estimators=50,
+    learning_rate=0.1,
+    num_leaves=10,
+    min_child_samples=20,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    verbosity=-1,
+    random_state=42,
+    n_jobs=1,
+)
+
+MIN_TP_SL = {
+    "M15": {"tp": 15, "sl": 10},
+    "M30": {"tp": 20, "sl": 15},
+    "H1": {"tp": 30, "sl": 20},
+    "H4": {"tp": 50, "sl": 30},
+}
+
+# ======================== MT5 UTILS ======================
+def tf_to_mt5(tf: str) -> int:
+    return {
+        "M1": mt5.TIMEFRAME_M1, "M5": mt5.TIMEFRAME_M5,
+        "M15": mt5.TIMEFRAME_M15, "M30": mt5.TIMEFRAME_M30,
+        "H1": mt5.TIMEFRAME_H1, "H4": mt5.TIMEFRAME_H4,
+    }[tf]
+
+def get_point(symbol: str) -> float:
+    info = mt5.symbol_info(symbol)
+    return info.point if info else 0.0001
+
+def get_spread(symbol: str) -> float:
+    info = mt5.symbol_info(symbol)
+    if info:
+        return info.spread * info.point
+    return 0.0001
+
+def get_pip_size(symbol: str, point: float) -> float:
+    if "JPY" in symbol:
+        return 0.01
+    else:
+        return 0.0001
+
+def get_filling_mode(symbol: str):
+    """
+    ИСПРАВЛЕНО: в Python mt5 нет констант SYMBOL_FILLING_*.
+    filling_mode — это битовая маска: FOK=1, IOC=2, RETURN(BOC)=4.
+    ORDER_FILLING_* имеют значения: FOK=0, IOC=1, RETURN=2.
+    """
+    info = mt5.symbol_info(symbol)
+    if info is None:
+        return mt5.ORDER_FILLING_IOC
+
+    fm = info.filling_mode
+    if fm & 1:  # FOK поддерживается брокером
+        return mt5.ORDER_FILLING_FOK
+    if fm & 2:  # IOC поддерживается
+        return mt5.ORDER_FILLING_IOC
+    return mt5.ORDER_FILLING_RETURN
+
+# ===================== FEATURE STORE ====================
+class FeatureStore:
+    def __init__(self, df: pd.DataFrame):
+        self.raw = df.reset_index(drop=True)
+        self.close = self.raw["close"].values
+        self.high = self.raw["high"].values
+        self.low = self.raw["low"].values
+        self.open = self.raw["open"].values
+        self.volume = self.raw["tick_volume"].values
+        self.time = self.raw["time"].values
+        self.features = None
+        
+    def calc_features(self):
+        d = self.raw.copy()
+        d["rsi_14"] = self._rsi(d["close"])
+        d["macd"] = d["close"].ewm(span=12).mean() - d["close"].ewm(span=26).mean()
+        
+        for k in [6, 12, 24]:
+            d[f"mom_{k}"] = d["close"].pct_change(k)
+        
+        d["atr_14"] = self._atr(d["high"], d["low"], d["close"], 14)
+        
+        for ma in [20, 50]:
+            d[f"ma_{ma}"] = d["close"] / d["close"].rolling(ma).mean()
+        
+        d["body"] = (d["close"] - d["open"]) / (d["high"] - d["low"] + 1e-9)
+        d["hl_range"] = (d["high"] - d["low"]) / d["close"]
+        d["vol_ratio"] = d["tick_volume"] / d["tick_volume"].rolling(20).mean()
+        
+        self.features = d.dropna().reset_index(drop=True)
+        if len(self.features) == 0:
+            raise ValueError("Нет данных после вычисления признаков")
+        return self.features
+    
+    def _rsi(self, prices, period=14):
+        delta = prices.diff()
+        gain = (delta.where(delta > 0, 0)).rolling(period).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(period).mean()
+        rs = gain / loss
+        return 100 - (100 / (1 + rs))
+    
+    def _atr(self, high, low, close, period=14):
+        tr1 = high - low
+        tr2 = abs(high - close.shift())
+        tr3 = abs(low - close.shift())
+        tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+        return tr.rolling(period).mean()
+
+# ===================== ЦЕЛЕВАЯ ПЕРЕМЕННАЯ ====================
+EXCLUDE = {"open","high","low","close","tick_volume","spread","real_volume","Target","time"}
+
+def get_feature_cols(df: pd.DataFrame) -> List[str]:
+    return [c for c in df.columns if c not in EXCLUDE]
+
+def build_target(fs: FeatureStore, sigma: float, feature_cols: List[str]) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    smoothed = gaussian_filter1d(fs.close, sigma, mode='reflect')
+    deriv = np.gradient(smoothed)
+    
+    margin = int(3 * sigma)
+    if margin * 2 >= len(deriv):
+        margin = int(len(deriv) * 0.1)
+        
+    start = margin
+    end = len(deriv) - margin if margin > 0 else len(deriv)
+    
+    if start >= end:
+        return np.array([]), np.array([]), np.array([]), np.array([]), np.array([]), np.array([])
+
+    df_slice = fs.features.iloc[start:end]
+    deriv_trimmed = deriv[start:end]
+    
+    y = (deriv_trimmed > 0).astype(np.int8)
+    X = df_slice[feature_cols].values
+    closes = df_slice["close"].values
+    highs = df_slice["high"].values
+    lows = df_slice["low"].values
+    times = df_slice["time"].values
+    
+    return X, y, closes, highs, lows, times
+
+# ===================== МОДЕЛЬ ====================
+def train_model(X: np.ndarray, y: np.ndarray) -> lgb.LGBMClassifier:
+    n_pos = np.sum(y == 1)
+    n_neg = np.sum(y == 0)
+    
+    if n_pos > 0 and n_neg > 0:
+        sample_weight = np.where(y == 1, n_neg / n_pos, 1.0).astype(np.float32)
+    else:
+        sample_weight = np.ones(len(y), dtype=np.float32)
+    
+    model = lgb.LGBMClassifier(**LGB_PARAMS)
+    model.fit(X, y, sample_weight=sample_weight)
+    return model
+
+# ===================== БЭКТЕСТ С ATR И ТРЕЙЛИНГОМ ====================
+@dataclass
+class Params:
+    sigma: float
+    tp_pips: float
+    sl_pips: float
+    use_trailing: bool
+    trailing_pips: float
+    use_trend_filter: bool
+    ma_period: int
+    min_hold_bars: int
+    max_hold_bars: int
+    use_atr_filter: bool
+    atr_multiplier: float
+    use_dynamic_tp_sl: bool
+    dynamic_tp_atr: float
+    dynamic_sl_atr: float
+
+def backtest_advanced(X: np.ndarray, y: np.ndarray, closes: np.ndarray, 
+                      highs: np.ndarray, lows: np.ndarray, times: np.ndarray,
+                      model: lgb.LGBMClassifier, p: Params, 
+                      point: float, spread: float, pip_size: float,
+                      atr_values: np.ndarray) -> Tuple[np.ndarray, List[dict]]:
+    
+    if len(X) == 0:
+        return np.array([0.0]), []
+
+    probs = model.predict_proba(X)[:, 1]
+    signals = np.where(probs > 0.5, 1, -1)
+    
+    if p.use_trend_filter:
+        ma = pd.Series(closes).rolling(p.ma_period).mean().values
+        trend_filter = np.where(closes > ma, 1, -1)
+        signals = np.where(signals == trend_filter, signals, 0)
+    
+    equity = [0.0]
+    trades = []
+    position = None
+    entry_price = 0.0
+    entry_time = 0
+    entry_bar = 0
+    bars_held = 0
+    max_price = 0.0
+    min_price = 0.0
+    current_sl = 0.0
+    current_tp = 0.0
+    
+    n = len(closes)
+    
+    for i in range(n):
+        signal = signals[i]
+        high = highs[i]
+        low = lows[i]
+        close = closes[i]
+        t = times[i]
+        
+        if position is not None:
+            bars_held += 1
+            
+            if position == 1:
+                if high > max_price:
+                    max_price = high
+            else:
+                if low < min_price:
+                    min_price = low
+            
+            if p.use_dynamic_tp_sl:
+                current_atr = atr_values[i]
+                if p.dynamic_tp_atr > 0:
+                    if position == 1:
+                        current_tp = entry_price + current_atr * p.dynamic_tp_atr
+                    else:
+                        current_tp = entry_price - current_atr * p.dynamic_tp_atr
+            
+            if p.use_trailing and bars_held >= p.min_hold_bars:
+                trailing_distance = p.trailing_pips * pip_size
+                if position == 1:
+                    new_sl = max_price - trailing_distance
+                    if new_sl > current_sl and new_sl > entry_price:
+                        current_sl = new_sl
+                else:
+                    new_sl = min_price + trailing_distance
+                    if new_sl < current_sl and new_sl < entry_price:
+                        current_sl = new_sl
+            
+            exit_price = None
+            exit_reason = None
+            
+            if position == 1:
+                if high >= current_tp:
+                    exit_price = current_tp - spread/2
+                    exit_reason = "TP"
+                elif low <= current_sl:
+                    exit_price = current_sl - spread/2
+                    exit_reason = "SL"
+            else:
+                if low <= current_tp:
+                    exit_price = current_tp + spread/2
+                    exit_reason = "TP"
+                elif high >= current_sl:
+                    exit_price = current_sl + spread/2
+                    exit_reason = "SL"
+            
+            if exit_price is None and bars_held >= p.max_hold_bars:
+                exit_price = close - spread/2 if position == 1 else close + spread/2
+                exit_reason = "Time"
+            
+            if exit_price is None and signal != position and bars_held >= p.min_hold_bars:
+                exit_price = close - spread/2 if position == 1 else close + spread/2
+                exit_reason = "Signal"
+            
+            if exit_price is not None:
+                pnl = (exit_price - entry_price) / entry_price if position == 1 else (entry_price - exit_price) / entry_price
+                equity.append(equity[-1] + pnl * 100)
+                trades.append({
+                    "entry_time": entry_time, "entry_price": entry_price,
+                    "direction": position, "exit_time": t, "exit_price": exit_price,
+                    "pnl": pnl * 100, "hold_bars": bars_held, "exit_reason": exit_reason
+                })
+                position = None
+                bars_held = 0
+                max_price = 0.0
+                min_price = 0.0
+                current_sl = 0.0
+                current_tp = 0.0
+        
+        if position is None and signal != 0:
+            if p.use_atr_filter:
+                current_atr = atr_values[i]
+                median_atr = np.median(atr_values)
+                if current_atr < median_atr * p.atr_multiplier:
+                    continue
+            
+            position = signal
+            if signal == 1:
+                entry_price = close + spread/2
+            else:
+                entry_price = close - spread/2
+            entry_time = t
+            entry_bar = i
+            bars_held = 0
+            max_price = entry_price
+            min_price = entry_price
+            
+            if p.use_dynamic_tp_sl:
+                current_atr = atr_values[i]
+                if p.dynamic_tp_atr > 0:
+                    if signal == 1:
+                        current_tp = entry_price + current_atr * p.dynamic_tp_atr
+                        current_sl = entry_price - current_atr * p.dynamic_sl_atr
+                    else:
+                        current_tp = entry_price - current_atr * p.dynamic_tp_atr
+                        current_sl = entry_price + current_atr * p.dynamic_sl_atr
+            else:
+                tp_distance = p.tp_pips * pip_size
+                sl_distance = p.sl_pips * pip_size
+                if signal == 1:
+                    current_tp = entry_price + tp_distance
+                    current_sl = entry_price - sl_distance
+                else:
+                    current_tp = entry_price - tp_distance
+                    current_sl = entry_price + sl_distance
+
+    if position is not None:
+        if position == 1:
+            last_price = closes[-1] - spread/2
+        else:
+            last_price = closes[-1] + spread/2
+        pnl = (last_price - entry_price) / entry_price if position == 1 else (entry_price - last_price) / entry_price
+        equity.append(equity[-1] + pnl * 100)
+        trades.append({
+            "entry_time": entry_time, "entry_price": entry_price,
+            "direction": position, "exit_time": times[-1], "exit_price": last_price,
+            "pnl": pnl * 100, "hold_bars": bars_held, "exit_reason": "End"
+        })
+    
+    return np.array(equity), trades
+
+def score_equity(eq: np.ndarray, trades: List[dict]) -> float:
+    if len(trades) < 5: return -1e6
+    returns = np.diff(eq)
+    if len(returns) == 0: return -1e6
+    
+    sharpe = returns.mean() / (returns.std() + 1e-9) * np.sqrt(252 * 6)
+    peak = np.maximum.accumulate(eq)
+    dd = (peak - eq) / (peak + 1e-9)
+    max_dd = dd.max()
+    
+    wins = sum(1 for t in trades if t["pnl"] > 0)
+    win_rate = wins / len(trades)
+    avg_pnl = np.mean([t["pnl"] for t in trades])
+    
+    avg_hold = np.mean([t["hold_bars"] for t in trades])
+    hold_bonus = max(0, avg_hold - 3) * 0.1
+    
+    tp_closes = sum(1 for t in trades if t.get("exit_reason") == "TP")
+    tp_bonus = (tp_closes / len(trades)) * 0.5 if len(trades) > 0 else 0
+    
+    return sharpe - max_dd * 0.5 + win_rate * 0.3 + avg_pnl * 10 + hold_bonus + tp_bonus
+
+# ===================== ОПТИМИЗАЦИЯ ====================
+def optimize(fs: FeatureStore, feature_cols: List[str], point: float, spread: float, 
+             pip_size: float, tf_name: str, n_trials: int = 50) -> Tuple[Dict, float]:
+    
+    min_tp = MIN_TP_SL[tf_name]["tp"]
+    min_sl = MIN_TP_SL[tf_name]["sl"]
+    
+    atr_series = pd.Series(fs.high).rolling(14).mean() - pd.Series(fs.low).rolling(14).mean()
+    atr_values = atr_series.values
+    
+    def objective(trial):
+        try:
+            use_dynamic = trial.suggest_categorical("use_dynamic_tp_sl", [True, False])
+            
+            if use_dynamic:
+                dynamic_tp_atr = trial.suggest_float("dynamic_tp_atr", 1.5, 3.0, step=0.5)
+                dynamic_sl_atr = trial.suggest_float("dynamic_sl_atr", 0.5, 1.5, step=0.5)
+                tp_pips = 0
+                sl_pips = 0
+            else:
+                dynamic_tp_atr = 0
+                dynamic_sl_atr = 0
+                tp_pips = trial.suggest_int("tp_pips", min_tp, min_tp * 5)
+                sl_pips = trial.suggest_int("sl_pips", min_sl, min_sl * 3)
+            
+            p = Params(
+                sigma=trial.suggest_float("sigma", 0.5, 3.0, step=0.1),
+                tp_pips=tp_pips,
+                sl_pips=sl_pips,
+                use_trailing=trial.suggest_categorical("use_trailing", [True, False]),
+                trailing_pips=trial.suggest_int("trailing_pips", 20, 60, step=10),
+                use_trend_filter=trial.suggest_categorical("use_trend_filter", [True, False]),
+                ma_period=trial.suggest_int("ma_period", 20, 100, step=10),
+                min_hold_bars=trial.suggest_int("min_hold_bars", 3, 10),
+                max_hold_bars=trial.suggest_int("max_hold_bars", 20, 100, step=10),
+                use_atr_filter=trial.suggest_categorical("use_atr_filter", [True, False]),
+                atr_multiplier=trial.suggest_float("atr_multiplier", 0.5, 1.0, step=0.1),
+                use_dynamic_tp_sl=use_dynamic,
+                dynamic_tp_atr=dynamic_tp_atr,
+                dynamic_sl_atr=dynamic_sl_atr,
+            )
+            
+            trial.set_user_attr("full_params", {
+                "sigma": p.sigma, "tp_pips": p.tp_pips, "sl_pips": p.sl_pips,
+                "use_trailing": p.use_trailing, "trailing_pips": p.trailing_pips,
+                "use_trend_filter": p.use_trend_filter, "ma_period": p.ma_period,
+                "min_hold_bars": p.min_hold_bars, "max_hold_bars": p.max_hold_bars,
+                "use_atr_filter": p.use_atr_filter, "atr_multiplier": p.atr_multiplier,
+                "use_dynamic_tp_sl": p.use_dynamic_tp_sl,
+                "dynamic_tp_atr": p.dynamic_tp_atr, "dynamic_sl_atr": p.dynamic_sl_atr,
+            })
+            
+            if not use_dynamic and p.tp_pips <= p.sl_pips:
+                return -1e6
+            
+            X, y, closes, highs, lows, times = build_target(fs, p.sigma, feature_cols)
+            
+            if len(y) < NOPT + NFWD: return -1e6
+            if np.sum(y == 1) < 10 or np.sum(y == 0) < 10: return -1e6
+            
+            X_train, y_train = X[:NOPT], y[:NOPT]
+            X_test = X[NOPT:NOPT+NFWD]
+            y_test = y[NOPT:NOPT+NFWD]
+            closes_test = closes[NOPT:NOPT+NFWD]
+            highs_test = highs[NOPT:NOPT+NFWD]
+            lows_test = lows[NOPT:NOPT+NFWD]
+            times_test = times[NOPT:NOPT+NFWD]
+            atr_test = atr_values[NOPT:NOPT+NFWD]
+            
+            model = train_model(X_train, y_train)
+            eq, trades = backtest_advanced(X_test, y_test, closes_test, highs_test, lows_test, times_test, model, p, point, spread, pip_size, atr_test)
+            
+            return score_equity(eq, trades)
+        except Exception:
+            return -1e6
+    
+    study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=42))
+    
+    print(f"   🔄 Оптимизация ({n_trials} итераций)...")
+    print(f"   📊 Спред: {spread:.5f} | Мин TP: {min_tp} пипсов")
+    study.optimize(objective, n_trials=n_trials, n_jobs=-1, show_progress_bar=True)
+    
+    if study.best_value <= -1e5:
+        print("    Оптимизация не дала результатов")
+        return {
+            "sigma": 1.5, "tp_pips": min_tp * 2, "sl_pips": min_sl * 2,
+            "use_trailing": True, "trailing_pips": 30,
+            "use_trend_filter": True, "ma_period": 50, 
+            "min_hold_bars": 3, "max_hold_bars": 50,
+            "use_atr_filter": False, "atr_multiplier": 0.7,
+            "use_dynamic_tp_sl": False, "dynamic_tp_atr": 2.0, "dynamic_sl_atr": 1.0
+        }, -1e6
+    
+    return study.best_trial.user_attrs["full_params"], study.best_value
+
+# ===================== ФОРВАРД-ТЕСТ ====================
+def forward_test(fs: FeatureStore, params: dict, feature_cols: List[str], 
+                 point: float, spread: float, pip_size: float) -> Tuple[Optional[np.ndarray], List[dict]]:
+    try:
+        p = Params(**params)
+        X, y, closes, highs, lows, times = build_target(fs, p.sigma, feature_cols)
+        
+        f_start = NOPT + NFWD
+        f_end = NOPT + 2 * NFWD
+        if len(y) < f_end: return None, []
+        
+        atr_series = pd.Series(highs).rolling(14).mean() - pd.Series(lows).rolling(14).mean()
+        atr_values = atr_series.values
+        
+        X_train, y_train = X[:NOPT], y[:NOPT]
+        X_test = X[f_start:f_end]
+        y_test = y[f_start:f_end]
+        closes_test = closes[f_start:f_end]
+        highs_test = highs[f_start:f_end]
+        lows_test = lows[f_start:f_end]
+        times_test = times[f_start:f_end]
+        atr_test = atr_values[f_start:f_end]
+        
+        if len(X_test) < 10: return None, []
+        
+        model = train_model(X_train, y_train)
+        return backtest_advanced(X_test, y_test, closes_test, highs_test, lows_test, times_test, model, p, point, spread, pip_size, atr_test)
+    except Exception as e:
+        print(f"    Ошибка: {e}")
+        import traceback
+        traceback.print_exc()
+        return None, []
+
+# ===================== ВИЗУАЛИЗАЦИЯ ====================
+def plot_results(results: Dict[Tuple[str, str], Tuple[np.ndarray, List[dict]]]):
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+    ax1, ax2, ax3, ax4 = axes[0, 0], axes[0, 1], axes[1, 0], axes[1, 1]
+    
+    all_trades = []
+    for (sym, tf), (eq, trades) in results.items():
+        if eq is not None and len(eq) > 1:
+            ax1.plot(eq, label=f"{sym} {tf}", lw=2, alpha=0.8)
+            all_trades.extend(trades)
+    
+    ax1.axhline(0, color='black', linestyle='--', alpha=0.5)
+    ax1.set_title("Эквити форвард-теста"); ax1.set_ylabel("Equity, %")
+    ax1.legend(); ax1.grid(alpha=0.3)
+    
+    if all_trades:
+        pnls = [t["pnl"] for t in all_trades]
+        ax2.hist(pnls, bins=30, alpha=0.7, color='skyblue', edgecolor='black')
+        ax2.axvline(0, color='red', linestyle='--', alpha=0.5)
+        ax2.set_title(f"Распределение PnL (сделок: {len(all_trades)})"); ax2.set_xlabel("PnL, %")
+        
+        holds = [t["hold_bars"] for t in all_trades]
+        ax4.hist(holds, bins=20, alpha=0.7, color='coral', edgecolor='black')
+        ax4.set_title("Распределение длительности удержания"); ax4.set_xlabel("Бары"); ax4.grid(alpha=0.3)
+
+    pairs, win_rates = [], []
+    for (sym, tf), (eq, trades) in results.items():
+        if trades:
+            wins = sum(1 for t in trades if t["pnl"] > 0)
+            pairs.append(f"{sym}\n{tf}"); win_rates.append(wins / len(trades) * 100)
+    if pairs:
+        ax3.bar(pairs, win_rates, color='lightgreen', edgecolor='black')
+        ax3.axhline(50, color='red', linestyle='--', alpha=0.5)
+        ax3.set_title("Win Rate по инструментам"); ax3.set_ylabel("Win Rate, %"); ax3.grid(alpha=0.3)
+    
+    plt.tight_layout(); plt.savefig("trading_results_ultimate.png", dpi=150); plt.show()
+    
+    if all_trades:
+        print("\n Сводная статистика:")
+        print(f"   Всего сделок: {len(all_trades)}")
+        wins = sum(1 for t in all_trades if t["pnl"] > 0)
+        print(f"   Win rate: {wins/len(all_trades)*100:.1f}%")
+        print(f"   Средний PnL: {np.mean([t['pnl'] for t in all_trades]):.4f}%")
+        print(f"   Итого PnL: {sum([t['pnl'] for t in all_trades]):.2f}%")
+        print(f"   Среднее удержание: {np.mean([t['hold_bars'] for t in all_trades]):.1f} баров")
+        
+        exit_stats = {}
+        for t in all_trades:
+            reason = t.get("exit_reason", "Unknown")
+            if reason not in exit_stats:
+                exit_stats[reason] = {"count": 0, "total_pnl": 0}
+            exit_stats[reason]["count"] += 1
+            exit_stats[reason]["total_pnl"] += t["pnl"]
+        
+        print("\n   Выходы по причинам:")
+        for reason, stats in sorted(exit_stats.items()):
+            avg = stats["total_pnl"] / stats["count"] if stats["count"] > 0 else 0
+            print(f"   - {reason}: {stats['count']} сделок, средний PnL: {avg:.4f}%")
+
+# ===================== ЖИВАЯ ТОРГОВЛЯ ====================
+class LiveTrader:
+    def __init__(self, cfg: dict):
+        self.symbol = cfg["symbol"]
+        self.tf = tf_to_mt5(cfg["timeframe"])
+        self.magic = cfg["magic"]
+        self.point = get_point(self.symbol)
+        self.spread = get_spread(self.symbol)
+        self.pip_size = get_pip_size(self.symbol, self.point)
+        self.params = Params(
+            sigma=cfg["sigma"],
+            tp_pips=cfg["tp_pips"],
+            sl_pips=cfg["sl_pips"],
+            use_trailing=cfg["use_trailing"],
+            trailing_pips=cfg["trailing_pips"],
+            use_trend_filter=cfg["use_trend_filter"],
+            ma_period=cfg["ma_period"],
+            min_hold_bars=cfg["min_hold_bars"],
+            max_hold_bars=cfg["max_hold_bars"],
+            use_atr_filter=cfg["use_atr_filter"],
+            atr_multiplier=cfg["atr_multiplier"],
+            use_dynamic_tp_sl=cfg["use_dynamic_tp_sl"],
+            dynamic_tp_atr=cfg["dynamic_tp_atr"],
+            dynamic_sl_atr=cfg["dynamic_sl_atr"],
+        )
+        self.model = None
+        self.last_time = 0
+        self.position = None
+        self.bars_held = 0
+        self.feature_cols = []
+        self.entry_price = 0
+        self.current_sl = 0
+        self.current_tp = 0
+        self.max_price = 0
+        self.min_price = 0
+        self.entry_bar_idx = 0
+        self.atr_values = None
+        
+        print(f"   🏆 {self.symbol} {cfg['timeframe']}")
+        if self.params.use_dynamic_tp_sl:
+            print(f"      Динамический TP: {self.params.dynamic_tp_atr}x ATR | SL: {self.params.dynamic_sl_atr}x ATR")
+        else:
+            print(f"      TP: {self.params.tp_pips} пипсов | SL: {self.params.sl_pips} пипсов")
+        if self.params.use_trailing:
+            print(f"      Трейлинг-стоп: {self.params.trailing_pips} пипсов")
+        self._init_model()
+    
+    def _init_model(self):
+        df = self._get_data()
+        if df is None: return
+        
+        fs = FeatureStore(df)
+        fs.calc_features()
+        self.feature_cols = get_feature_cols(fs.features)
+        
+        X, y, _, _, _, _ = build_target(fs, self.params.sigma, self.feature_cols)
+        if len(X) > NOPT:
+            self.model = train_model(X[-NOPT:], y[-NOPT:])
+            
+            highs = df["high"].values
+            lows = df["low"].values
+            atr_series = pd.Series(highs).rolling(14).mean() - pd.Series(lows).rolling(14).mean()
+            self.atr_values = atr_series.values
+            
+            print(f"   ✅ Модель обучена")
+    
+    def _get_data(self, bars: int = NOPT + 200) -> Optional[pd.DataFrame]:
+        for _ in range(3):
+            rates = mt5.copy_rates_from_pos(self.symbol, self.tf, 0, bars)
+            if rates is not None and len(rates) > 100: return pd.DataFrame(rates)
+            time.sleep(1)
+        return None
+    
+    def tick(self):
+        df = self._get_data()
+        if df is None or self.model is None: return
+        
+        current_time = df.iloc[-1]["time"]
+        if current_time == self.last_time: return
+        self.last_time = current_time
+        
+        fs = FeatureStore(df)
+        fs.calc_features()
+        X, _, closes, highs, lows, _ = build_target(fs, self.params.sigma, self.feature_cols)
+        
+        if len(X) == 0: return
+        
+        current_atr = self.atr_values[-1] if self.atr_values is not None else 0
+        
+        prob = self.model.predict_proba(X[[-1]])[0][1]
+        signal = 1 if prob > 0.5 else -1
+        
+        if self.params.use_trend_filter:
+            ma = pd.Series(closes).rolling(self.params.ma_period).mean().iloc[-1]
+            trend = 1 if closes[-1] > ma else -1
+            if signal != trend:
+                signal = 0
+        
+        current_price = closes[-1]
+        current_high = highs[-1]
+        current_low = lows[-1]
+        
+        positions = mt5.positions_get(symbol=self.symbol, magic=self.magic)
+        
+        if positions:
+            self.bars_held += 1
+            pos = positions[0]
+            
+            if pos.type == 0:
+                if current_high > self.max_price:
+                    self.max_price = current_high
+            else:
+                if current_low < self.min_price:
+                    self.min_price = current_low
+            
+            if self.params.use_trailing and self.bars_held >= self.params.min_hold_bars:
+                trailing_distance = self.params.trailing_pips * self.pip_size
+                if pos.type == 0:
+                    new_sl = self.max_price - trailing_distance
+                    if new_sl > self.current_sl and new_sl > self.entry_price:
+                        self.current_sl = new_sl
+                else:
+                    new_sl = self.min_price + trailing_distance
+                    if new_sl < self.current_sl and new_sl < self.entry_price:
+                        self.current_sl = new_sl
+            
+            exit_reason = None
+            
+            if pos.type == 0:
+                if current_high >= self.current_tp:
+                    exit_reason = "TP"
+                elif current_low <= self.current_sl:
+                    exit_reason = "SL"
+            else:
+                if current_low <= self.current_tp:
+                    exit_reason = "TP"
+                elif current_high >= self.current_sl:
+                    exit_reason = "SL"
+            
+            if exit_reason is None and self.bars_held >= self.params.max_hold_bars:
+                exit_reason = "Time"
+            
+            if exit_reason is not None:
+                self._close_position(pos, exit_reason)
+                self.position = None
+                self.bars_held = 0
+                self.current_sl = 0
+                self.current_tp = 0
+                self.max_price = 0
+                self.min_price = 0
+                return
+        
+        if not positions and signal != 0:
+            if self.params.use_atr_filter and self.atr_values is not None:
+                median_atr = np.median(self.atr_values)
+                if current_atr < median_atr * self.params.atr_multiplier:
+                    return
+            
+            self.position = signal
+            self.entry_price = current_price
+            self.bars_held = 0
+            self.entry_bar_idx = len(closes) - 1
+            self.max_price = current_price
+            self.min_price = current_price
+            
+            if self.params.use_dynamic_tp_sl and current_atr > 0:
+                if signal == 1:
+                    self.current_tp = current_price + current_atr * self.params.dynamic_tp_atr
+                    self.current_sl = current_price - current_atr * self.params.dynamic_sl_atr
+                else:
+                    self.current_tp = current_price - current_atr * self.params.dynamic_tp_atr
+                    self.current_sl = current_price + current_atr * self.params.dynamic_sl_atr
+            else:
+                tp_distance = self.params.tp_pips * self.pip_size
+                sl_distance = self.params.sl_pips * self.pip_size
+                if signal == 1:
+                    self.current_tp = current_price + tp_distance
+                    self.current_sl = current_price - sl_distance
+                else:
+                    self.current_tp = current_price - tp_distance
+                    self.current_sl = current_price + sl_distance
+            
+            self._open_position(signal, prob)
+    
+    def _open_position(self, direction: int, prob: float):
+        tick = mt5.symbol_info_tick(self.symbol)
+        if tick is None: return
+        ask, bid = tick.ask, tick.bid
+        
+        order_type = mt5.ORDER_TYPE_BUY if direction == 1 else mt5.ORDER_TYPE_SELL
+        price = ask if direction == 1 else bid
+        
+        symbol_info = mt5.symbol_info(self.symbol)
+        if symbol_info:
+            price = round(price / symbol_info.trade_tick_size) * symbol_info.trade_tick_size
+        
+        request = {
+            "action": mt5.TRADE_ACTION_DEAL, "symbol": self.symbol, "volume": LOT,
+            "type": order_type, "price": price, "magic": self.magic,
+            "comment": f"P={prob:.2f}", "type_time": mt5.ORDER_TIME_GTC,
+            "type_filling": get_filling_mode(self.symbol),
+        }
+        
+        result = mt5.order_send(request)
+        if result.retcode == mt5.TRADE_RETCODE_DONE:
+            print(f"   ✅ {self.symbol} {'BUY' if direction==1 else 'SELL'} @ {price} | P={prob:.2f}")
+    
+    def _close_position(self, position, reason: str):
+        tick = mt5.symbol_info_tick(self.symbol)
+        if tick is None: return
+        ask, bid = tick.ask, tick.bid
+        
+        price = bid if position.type == 0 else ask
+        order_type = mt5.ORDER_TYPE_SELL if position.type == 0 else mt5.ORDER_TYPE_BUY
+        
+        request = {
+            "action": mt5.TRADE_ACTION_DEAL, "symbol": self.symbol, "volume": position.volume,
+            "type": order_type, "position": position.ticket, "price": price, "magic": self.magic,
+            "comment": reason, "type_time": mt5.ORDER_TIME_GTC,
+            "type_filling": get_filling_mode(self.symbol),
+        }
+        
+        result = mt5.order_send(request)
+        if result.retcode == mt5.TRADE_RETCODE_DONE:
+            pnl_pips = (price - position.price_open) / self.pip_size if position.type == 0 else (position.price_open - price) / self.pip_size
+            print(f"    {self.symbol} закрыт ({reason}) | PnL: {pnl_pips:.1f} пипсов")
+    
+    def close_all(self):
+        positions = mt5.positions_get(symbol=self.symbol, magic=self.magic)
+        if positions:
+            for pos in positions:
+                self._close_position(pos, "Shutdown")
+                time.sleep(0.5)
+
+def run_live(champions: List[dict]):
+    print("\n" + "="*60)
+    print("🚀 ЗАПУСК ДЕМО-ТОРГОВЛИ (ULTIMATE v5.0)")
+    print("="*60)
+    
+    traders = [LiveTrader(cfg) for cfg in champions]
+    print(f"\n✅ Запущено {len(traders)} трейдеров. Нажмите Ctrl+C для остановки\n")
+    
+    try:
+        while True:
+            for trader in traders:
+                try: trader.tick()
+                except Exception as e: print(f"   ⚠ Ошибка в {trader.symbol}: {e}")
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\n🛑 Остановка...")
+        for trader in traders: trader.close_all()
+        print("✅ Все позиции закрыты")
+
+# ===================== ОСНОВНАЯ ФУНКЦИЯ ====================
+def main():
+    print("="*60)
+    print(" ПРОФЕССИОНАЛЬНАЯ ТОРГОВАЯ СИСТЕМА v5.0 ULTIMATE")
+    print(" • Трейлинг-стоп")
+    print(" • Фильтр по ATR")
+    print(" • Динамический TP/SL")
+    print("="*60)
+    
+    if not mt5.initialize():
+        print("❌ Ошибка инициализации MT5"); return
+    print(f"✅ MT5 инициализирован")
+    
+    results = {}
+    champions = []
+    magic = MAGIC_BASE
+    
+    for sym in PAIRS:
+        for tf_name in TIMEFRAMES:
+            print(f"\n{'='*40}")
+            print(f"▶ {sym} {tf_name}")
+            
+            bars_needed = NOPT + 2 * NFWD + 1000
+            rates = mt5.copy_rates_from_pos(sym, tf_to_mt5(tf_name), 0, bars_needed)
+            
+            if rates is None or len(rates) < NOPT + 2 * NFWD:
+                print(f"    Недостаточно данных"); continue
+            
+            try:
+                fs = FeatureStore(pd.DataFrame(rates))
+                fs.calc_features()
+                feature_cols = get_feature_cols(fs.features)
+                point = get_point(sym)
+                spread = get_spread(sym)
+                pip_size = get_pip_size(sym, point)
+                
+                if fs.features is None or len(fs.features) < NOPT + 2 * NFWD:
+                    print(f"   ⚠ Недостаточно признаков"); continue
+                
+                best_params, best_score = optimize(fs, feature_cols, point, spread, pip_size, tf_name, n_trials=120)
+                
+                print(f"   ✅ Sigma: {best_params['sigma']:.1f}")
+                if best_params['use_dynamic_tp_sl']:
+                    print(f"      Динамический TP: {best_params['dynamic_tp_atr']}x ATR | SL: {best_params['dynamic_sl_atr']}x ATR")
+                else:
+                    print(f"      TP: {best_params['tp_pips']} пипсов | SL: {best_params['sl_pips']} пипсов")
+                if best_params['use_trailing']:
+                    print(f"      Трейлинг-стоп: {best_params['trailing_pips']} пипсов")
+                if best_params['use_atr_filter']:
+                    print(f"      ATR фильтр: {best_params['atr_multiplier']}x медианы")
+                print(f"      Trend: {best_params['use_trend_filter']} (MA{best_params['ma_period']})")
+                
+                eq, trades = forward_test(fs, best_params, feature_cols, point, spread, pip_size)
+                
+                if eq is not None and len(eq) > 1:
+                    wins = sum(1 for t in trades if t["pnl"] > 0)
+                    win_rate = wins / len(trades)
+                    total_pnl = eq[-1]
+                    avg_hold = np.mean([t["hold_bars"] for t in trades])
+                    
+                    if win_rate < 0.50:
+                        print(f"   ⚠ Win rate {win_rate*100:.1f}% < 50%, пропускаем")
+                        continue
+                    
+                    if total_pnl < 0.0:
+                        print(f"   ⚠ Доходность {total_pnl:.2f}% < 0%, пропускаем")
+                        continue
+                    
+                    if avg_hold < 1:
+                        print(f"   ⚠ Среднее удержание {avg_hold:.1f} < 1 баров, пропускаем")
+                        continue
+                    
+                    results[(sym, tf_name)] = (eq, trades)
+                    champion = {
+                        "symbol": sym, "timeframe": tf_name, "magic": magic,
+                        **best_params
+                    }
+                    champions.append(champion)
+                    magic += 1
+                    
+                    tp_closes = sum(1 for t in trades if t.get("exit_reason") == "TP")
+                    tp_rate = tp_closes / len(trades) * 100
+                    
+                    print(f"    ЧЕМПИОН! WR: {win_rate*100:.1f}%, PnL: {total_pnl:.2f}%, TP rate: {tp_rate:.0f}%")
+                    
+            except Exception as e:
+                print(f"    Ошибка: {e}")
+                import traceback
+                traceback.print_exc()
+                continue
+    
+    if results:
+        plot_results(results)
+        with open("champions_ultimate.json", "w") as f:
+            json.dump(champions, f, indent=2)
+        print(f"\n💾 Сохранено {len(champions)} чемпионов в champions_ultimate.json")
+        
+        if champions:
+            try:
+                ans = input("\n🚀 Запустить на ДЕМО? (Y/N): ").strip().upper()
+            except EOFError:
+                ans = "N"
+            if ans == "Y": run_live(champions)
+    else:
+        print("\n❌ Нет пар, прошедших фильтры качества")
+    
+    mt5.shutdown()
+    print("\n✅ Завершено")
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,2 @@
+MetaTrader5>=5.0.0; sys_platform != "linux"
+numpy>=1.20.0

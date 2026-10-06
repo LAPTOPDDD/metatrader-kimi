@@ -1,0 +1,122 @@
+[
+  {
+    "symbol": "USDJPY",
+    "timeframe": "H1",
+    "n_cycles": 4989,
+    "win_rate": 97.53457606734817,
+    "total_profit": 2482381.000000865,
+    "max_dd": 2101928.9999999874,
+    "safety_score": 1.1810013563735406,
+    "elapsed": 0.022800445556640625
+  },
+  {
+    "symbol": "XAUUSD",
+    "timeframe": "M5",
+    "n_cycles": 4989,
+    "win_rate": 97.05351773902585,
+    "total_profit": 63792480.00000685,
+    "max_dd": 54802159.9999975,
+    "safety_score": 1.1640504680839179,
+    "elapsed": 0.024018526077270508
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "H1",
+    "n_cycles": 4989,
+    "win_rate": 97.65484064942875,
+    "total_profit": 22214.09000000073,
+    "max_dd": 21177.64000000059,
+    "safety_score": 1.0489407696041728,
+    "elapsed": 0.025702953338623047
+  },
+  {
+    "symbol": "EURUSD",
+    "timeframe": "M5",
+    "n_cycles": 4989,
+    "win_rate": 97.3541791942273,
+    "total_profit": 3754.080000004892,
+    "max_dd": 5095.0999999995265,
+    "safety_score": 0.7368020254764854,
+    "elapsed": 0.023801088333129883
+  },
+  {
+    "symbol": "EURUSD",
+    "timeframe": "H1",
+    "n_cycles": 4989,
+    "win_rate": 97.71497294046904,
+    "total_profit": 17320.739999999747,
+    "max_dd": 27313.029999999686,
+    "safety_score": 0.6341566644198738,
+    "elapsed": 0.026112079620361328
+  },
+  {
+    "symbol": "XAUUSD",
+    "timeframe": "M1",
+    "n_cycles": 4989,
+    "win_rate": 96.83303267187813,
+    "total_profit": -23815109.99999722,
+    "max_dd": 67282380.00000007,
+    "safety_score": -0.35395760375892166,
+    "elapsed": 0.0263369083404541
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "M5",
+    "n_cycles": 4989,
+    "win_rate": 97.61475245540188,
+    "total_profit": -1255303.9999996454,
+    "max_dd": 2755386.9999999646,
+    "safety_score": -0.4555817386086461,
+    "elapsed": 0.02478933334350586
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "M5",
+    "n_cycles": 4989,
+    "win_rate": 96.8129885748647,
+    "total_profit": -1616.129999996762,
+    "max_dd": 3498.9000000002616,
+    "safety_score": -0.4618965960720916,
+    "elapsed": 0.025203704833984375
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "M1",
+    "n_cycles": 4989,
+    "win_rate": 97.05351773902585,
+    "total_profit": -145351.000000108,
+    "max_dd": 217402.00000006796,
+    "safety_score": -0.6685817057803635,
+    "elapsed": 0.0253908634185791
+  },
+  {
+    "symbol": "XAUUSD",
+    "timeframe": "H1",
+    "n_cycles": 4989,
+    "win_rate": 97.27400280617358,
+    "total_profit": -522473040.0000019,
+    "max_dd": 643442290.0000006,
+    "safety_score": -0.8119967371121992,
+    "elapsed": 0.02632927894592285
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "M1",
+    "n_cycles": 4989,
+    "win_rate": 96.43215073160954,
+    "total_profit": -5229.539999999655,
+    "max_dd": 2236.539999999639,
+    "safety_score": -2.338227798295805,
+    "elapsed": 0.0283358097076416
+  },
+  {
+    "symbol": "EURUSD",
+    "timeframe": "M1",
+    "n_cycles": 4989,
+    "win_rate": 96.99338544798557,
+    "total_profit": -4578.179999999348,
+    "max_dd": 1534.0699999992012,
+    "safety_score": -2.9843357865037006,
+    "elapsed": 0.028012752532958984
+  }
+]

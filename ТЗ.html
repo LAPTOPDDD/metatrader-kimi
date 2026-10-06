@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ТЗ: GAUSSIAN ENSEMBLE v5.1</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #7f8c8d;
+            margin-top: 25px;
+        }
+        .principle-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .principle-box h2 {
+            color: white;
+            border: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+        }
+        .principle-list {
+            background: white;
+            color: #2c3e50;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .principle-list ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .principle-list li {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .warning strong {
+            color: #856404;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+        ul, ol {
+            padding-left: 30px;
+        }
+        li {
+            margin: 8px 0;
+        }
+        @media print {
+            body {
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 ТЕХНИЧЕСКОЕ ЗАДАНИЕ</h1>
+        <h2>Торговая система "GAUSSIAN ENSEMBLE v5.1"</h2>
+
+        <div class="principle-box">
+            <h2> ГЛАВНЫЙ ПРИНЦИП:</h2>
+            <div class="principle-list">
+                <ol>
+                    <li>Рынок меняется каждый день.</li>
+                    <li>Наша сила — в адаптации.</li>
+                    <li>Не пытайся предсказать будущее.</li>
+                    <li>Лови текущий момент.</li>
+                    <li>Управляй риском.</li>
+                    <li>Повторяй завтра.</li>
+                </ol>
+            </div>
+        </div>
+
+        <h2>1. АРХИТЕКТУРА СИСТЕМЫ</h2>
+        <h3>1.1 Основные компоненты</h3>
+        <pre>
+┌─────────────────────────────────────────────────┐
+│  1. ЯДРО: Первая производная Гаусса             │
+│     (целевая переменная для обучения)           │
+└─────────────────────────────────────────────────┘
+                      ↓
+─────────────────────────────────────────────────┐
+│  2. МОДЕЛЬ: LightGBM Classifier                 │
+│     (аппроксимация производной на признаках)    │
+└─────────────────────────────────────────────────┘
+                      ↓
+┌─────────────────────────────────────────────────┐
+│  3. АНСАМБЛЬ: Чемпионы (пары × таймфреймы)     │
+│     (каждая пара имеет свою оптимизированную    │
+│      модель с уникальными параметрами)          │
+└─────────────────────────────────────────────────┘
+                      ↓
+─────────────────────────────────────────────────┐
+│  4. ОБВЯЗКА: Фильтры + Стопы                    │
+│     (защита капитала, отсев ложных сигналов)    │
+└─────────────────────────────────────────────────┘
+        </pre>
+
+        <h2>2. ЯДРО СИСТЕМЫ: ПЕРВАЯ ПРОИЗВОДНАЯ ГАУССА</h2>
+        <h3>2.1 Алгоритм формирования целевой переменной</h3>
+        <pre>
+# Вход: ценовой ряд close (массив цен закрытия)
+# Параметры: sigma (сглаживание Гаусса, оптимизируется 0.5-3.0)
+
+# Шаг 1: Сглаживание Гаусса
+smoothed = gaussian_filter1d(close, sigma, mode='reflect')
+
+# Шаг 2: Первая производная (градиент)
+deriv = np.gradient(smoothed)
+
+# Шаг 3: Целевая переменная (бинарная классификация)
+Target = (deriv > 0).astype(int)  # 1 = вверх, 0 = вниз
+        </pre>
+
+        <div class="warning">
+            <strong>⚠️ 2.2 КРИТИЧЕСКИ ВАЖНО: Удаление краевых эффектов (дребезг)</strong>
+            <p><strong>ПРОБЛЕМА:</strong></p>
+            <ul>
+                <li>При применении гауссова фильтра <strong>края последовательности</strong> имеют артефакты</li>
+                <li>Производная на краях <strong>недостоверна</strong> (ложные сигналы)</li>
+                <li>Длина "дребезга" зависит от sigma</li>
+            </ul>
+            <p><strong>РЕШЕНИЕ:</strong></p>
+            <pre>
+# Рассчёт безопасного margin (запаса)
+margin = int(3 * sigma)
+
+# КРИТИЧЕСКАЯ ФОРМУЛА:
+# margin = 3 сигмы отрезаем с КАЖДОГО конца
+# Общее количество отрезаемых баров = 2 × margin = 6 × sigma
+
+# Примеры:
+# sigma = 1.0 → margin = 3 бара с каждого края (всего 6 баров)
+# sigma = 2.0 → margin = 6 баров с каждого края (всего 12 баров)
+# sigma = 3.0 → margin = 9 баров с каждого края (всего 18 баров)
+
+# Обрезка данных
+start = margin
+end = len(deriv) - margin
+
+X = features.iloc[start:end]      # Признаки
+y = deriv[start:end] > 0          # Целевая переменная
+            </pre>
+            <p><strong>ПОЧЕМУ 3 СИГМЫ:</strong></p>
+            <ul>
+                <li>Гауссово распределение: 99.7% данных в пределах ±3σ</li>
+                <li>Производная стабилизируется после 3σ</li>
+                <li>Меньше 3σ → остаточный дребезг</li>
+                <li>Больше 3σ → потеря полезных данных</li>
+            </ul>
+        </div>
+
+        <h2>3. МОДЕЛЬ: LIGHTGBM CLASSIFIER</h2>
+        <h3>3.1 Параметры модели</h3>
+        <pre>
+LGB_PARAMS = {
+    'n_estimators': 50,          # Количество деревьев
+    'learning_rate': 0.1,        # Скорость обучения
+    'num_leaves': 10,            # Листья (простота модели)
+    'min_child_samples': 20,     # Мин. образцов в листе
+    'subsample': 0.8,            # Доля данных
+    'colsample_bytree': 0.8,     # Доля признаков
+    'verbosity': -1,             # Тихий режим
+    'random_state': 42,          # Воспроизводимость
+    'n_jobs': 1,                 # 1 поток (для Optuna n_jobs=-1)
+}
+        </pre>
+
+        <h3>3.2 Балансировка классов</h3>
+        <pre>
+# Если классов неравномерно (0 и 1)
+n_pos = sum(y == 1)
+n_neg = sum(y == 0)
+
+sample_weight = np.where(
+    y == 1, 
+    n_neg / n_pos if n_pos > 0 else 1.0,  # Вес для класса 1
+    1.0                                     # Вес для класса 0
+)
+
+model.fit(X, y, sample_weight=sample_weight)
+        </pre>
+
+        <h2>4. ПРИЗНАКИ (FEATURES)</h2>
+        <h3>4.1 Набор признаков для каждой свечи</h3>
+        <pre>
+features = {
+    # 1. Индикаторы тренда
+    'rsi_14': RSI(period=14),
+    'macd': EMA(12) - EMA(26),
+    
+    # 2. Моментум
+    'mom_6': pct_change(6),
+    'mom_12': pct_change(12),
+    'mom_24': pct_change(24),
+    
+    # 3. Волатильность
+    'atr_14': ATR(period=14) / close,
+    
+    # 4. Скользящие средние
+    'ma_20': close / SMA(20),
+    'ma_50': close / SMA(50),
+    
+    # 5. Свечные паттерны
+    'body': (close - open) / (high - low),
+    'hl_range': (high - low) / close,
+    
+    # 6. Объём
+    'vol_ratio': volume / SMA(volume, 20),
+}
+
+# Итого: 14 признаков
+        </pre>
+
+        <h2>5. АНСАМБЛЬ ЧЕМПИОНОВ</h2>
+        <h3>5.1 Структура ансамбля</h3>
+        <pre>
+champions = [
+    {
+        'symbol': 'GBPJPY',
+        'timeframe': 'H4',
+        'magic': 100000,
+        'sigma': 2.7,
+        'tp_pips': 201,
+        'sl_pips': 78,
+        'use_trailing': True,
+        'trailing_pips': 30,
+        'use_trend_filter': True,
+        'ma_period': 30,
+        'min_hold_bars': 3,
+        'max_hold_bars': 50,
+        'use_atr_filter': True,
+        'atr_multiplier': 1.0,
+        'use_dynamic_tp_sl': False,
+        'dynamic_tp_atr': 2.0,
+        'dynamic_sl_atr': 1.0,
+        'model': trained_lightgbm_model,
+    },
+    # ... другие чемпионы
+]
+        </pre>
+
+        <h3>5.2 Критерии отбора чемпионов</h3>
+        <pre>
+# Фильтры качества (после форвард-теста)
+
+if win_rate < 0.55:           # Win Rate < 55% → отклонить
+    reject()
+
+if total_pnl < 1.0:           # Доходность < 1% → отклонить
+    reject()
+
+if avg_hold < 3:              # Среднее удержание < 3 баров → отклонить
+    reject()
+
+# Если все фильтры пройдены → чемпион добавлен
+add_to_ensemble()
+        </pre>
+
+        <h2>6. ФИЛЬТРЫ (ОБВЯЗКА)</h2>
+        <h3>6.1 ATR фильтр (волатильность)</h3>
+        <pre>
+# Цель: не торговать в низкой волатильности (флэт, спред съест прибыль)
+
+current_atr = ATR(14)[current_bar]
+median_atr = np.median(ATR(14))
+
+if current_atr < median_atr * atr_multiplier:
+    SKIP_TRADE  # Пропускаем сделку
+
+# Рекомендуемые значения:
+# atr_multiplier = 0.5-1.0
+# Меньше = агрессивнее, больше = консервативнее
+        </pre>
+
+        <h3>6.2 Трендовый фильтр (MA)</h3>
+        <pre>
+# Цель: торговать только по тренду
+
+ma = SMA(close, ma_period)
+
+if use_trend_filter:
+    trend = 1 if close > ma else -1
+    signal = signal if signal == trend else 0  # Отменяем сигнал
+        </pre>
+
+        <h3>6.3 Временные ограничения</h3>
+        <pre>
+min_hold_bars = 3    # Минимум баров до выхода
+max_hold_bars = 50   # Максимум баров (принудительный выход)
+
+if bars_held >= max_hold_bars:
+    EXIT_POSITION  # Выход по времени
+        </pre>
+
+        <h2>7. СТОПЫ И ТЕЙК-ПРОФИТЫ</h2>
+        <h3>7.1 Фиксированные TP/SL</h3>
+        <pre>
+# Для H1: TP ≥ 30 пипсов, SL ≥ 20 пипсов
+# Для H4: TP ≥ 50 пипсов, SL ≥ 30 пипсов
+
+tp_distance = tp_pips * pip_size
+sl_distance = sl_pips * pip_size
+
+# BUY:
+entry_price = close + spread/2
+tp = entry_price + tp_distance
+sl = entry_price - sl_distance
+
+# SELL:
+entry_price = close - spread/2
+tp = entry_price - tp_distance
+sl = entry_price + sl_distance
+        </pre>
+
+        <h3>7.2 Динамический TP/SL (на основе ATR)</h3>
+        <pre>
+# Адаптация к текущей волатильности
+
+current_atr = ATR(14)[current_bar]
+
+if use_dynamic_tp_sl:
+    tp_distance = current_atr * dynamic_tp_atr  # 1.5-3.0
+    sl_distance = current_atr * dynamic_sl_atr  # 0.5-1.5
+        </pre>
+
+        <h3>7.3 Трейлинг-стоп</h3>
+        <pre>
+# Двигает SL вслед за ценой (только в прибыль)
+
+if use_trailing and bars_held >= min_hold_bars:
+    trailing_distance = trailing_pips * pip_size
+    
+    if position == BUY:
+        max_price = max(highs[entry_bar:current_bar])
+        new_sl = max_price - trailing_distance
+        
+        if new_sl > current_sl and new_sl > entry_price:
+            current_sl = new_sl  # Двигаем SL вверх
+    
+    if position == SELL:
+        min_price = min(lows[entry_bar:current_bar])
+        new_sl = min_price + trailing_distance
+        
+        if new_sl < current_sl and new_sl < entry_price:
+            current_sl = new_sl  # Двигаем SL вниз
+        </pre>
+
+        <h3>7.4 Выходы</h3>
+        <pre>
+exit_reasons = {
+    'TP': 'Тейк-профит достигнут',
+    'SL': 'Стоп-лосс сработал',
+    'Time': 'Превышено max_hold_bars',
+    'Signal': 'Сигнал развернулся',
+    'End': 'Конец тестового периода',
+}
+        </pre>
+
+        <h2>8. ОПТИМИЗАЦИЯ (WALK-FORWARD)</h2>
+        <h3>8.1 Разделение данных</h3>
+        <pre>
+# Вход: все доступные данные (например, 2000 баров)
+
+NOPT = 1000  # Баров для обучения
+NFWD = 500   # Баров для форвард-теста
+
+# Обучение:
+train_data = data[:NOPT]  # Первые 1000 баров
+
+# Форвард-тест:
+test_data = data[NOPT:NOPT+NFWD]  # Следующие 500 баров
+
+# Важно: после обрезки margin (дребезг):
+train_data = train_data[margin:-margin]
+test_data = test_data[margin:-margin]
+        </pre>
+
+        <h2>9. РЕЖИМ РАБОТЫ</h2>
+        <h3>9.1 Daily Retraining (ежедневное переобучение)</h3>
+        <pre>
+# Утро (перед открытием сессии):
+1. Загрузить свежие данные (NOPT + NFWD + 500 баров)
+2. Рассчитать признаки
+3. Запустить оптимизацию (50 итераций, n_jobs=-1)
+4. Отобрать чемпионов (фильтры качества)
+5. Сохранить champions.json
+6. Запустить торговлю
+
+# Вечер (после закрытия сессии):
+1. Собрать статистику за день
+2. Закрыть все позиции (опционально)
+3. Повторить с шага 1 на следующий день
+        </pre>
+
+        <h3>9.2 Частота переобучения</h3>
+        <table>
+            <tr>
+                <th>Таймфрейм</th>
+                <th>Частота</th>
+            </tr>
+            <tr>
+                <td>M15-M30</td>
+                <td>Каждый день</td>
+            </tr>
+            <tr>
+                <td>H1-H4</td>
+                <td>Раз в 2-3 дня</td>
+            </tr>
+            <tr>
+                <td>D1</td>
+                <td>Раз в неделю</td>
+            </tr>
+        </table>
+
+        <h2>10. РИСК-МЕНЕДЖМЕНТ</h2>
+        <h3>10.1 Параметры риска</h3>
+        <pre>
+LOT = 0.01              # Минимальный лот для старта
+MAGIC_BASE = 100_000    # Уникальный идентификатор
+MAX_SPREAD_PCT = 0.0002 # Макс. спред (2 пункта)
+
+# На пару:
+risk_per_trade = 0.01   # 1% от депозита
+max_drawdown = 0.20     # 20% стоп-торговля
+        </pre>
+
+        <h3>10.2 Диверсификация</h3>
+        <pre>
+# Торговать одновременно:
+- 3-5 пар (не больше)
+- Разные таймфреймы (H1 + H4)
+- Коррелированные пары не больше 2 (GBPUSD + EURUSD = плохо)
+
+# Рекомендуемый портфель:
+portfolio = ['GBPJPY H4', 'USDJPY H4', 'GBPUSD H1']
+        </pre>
+
+        <h2>11. КРИТИЧЕСКИ ВАЖНЫЕ ДЕТАЛИ</h2>
+        <div class="warning">
+            <strong>11.1 Краевые эффекты (дребезг)</strong>
+            <pre>
+# САМОЕ ВАЖНОЕ ПРАВИЛО:
+margin = int(3 * sigma)  # Баров с КАЖДОГО конца
+
+# Примеры:
+sigma = 1.0 → margin = 3 бара (всего 6 баров удаляется)
+sigma = 2.0 → margin = 6 баров (всего 12 баров)
+sigma = 3.0 → margin = 9 баров (всего 18 баров)
+
+# Почему 3 сигмы:
+# - 99.7% гауссова распределения в пределах ±3σ
+# - Производная стабилизируется после 3σ
+# - Меньше → остаточный шум на краях
+# - Больше → потеря полезных данных
+
+# ВСЕГДА проверяй:
+if margin * 2 >= len(data):
+    margin = int(len(data) * 0.1)  # Fallback 10%
+            </pre>
+        </div>
+
+        <div class="warning">
+            <strong>11.2 Учёт спреда</strong>
+            <pre>
+# BUY: вход по ASK (close + spread/2)
+# SELL: вход по BID (close - spread/2)
+
+# Выход:
+# BUY → выход по BID (close - spread/2)
+# SELL → выход по ASK (close + spread/2)
+
+# Спред УЖЕ учтён в расчёте PnL!
+            </pre>
+        </div>
+
+        <div class="warning">
+            <strong>11.3 Размер пипса</strong>
+            <pre>
+# Для пар с JPY: 1 пипс = 0.01
+# Для остальных: 1 пипс = 0.0001
+
+pip_size = 0.01 if "JPY" in symbol else 0.0001
+            </pre>
+        </div>
+
+        <h2>12. ЧЕК-ЛИСТ ПЕРЕД ЗАПУСКОМ</h2>
+        <h3>12.1 Подготовка</h3>
+        <ul>
+            <li>☐ MT5 запущен и подключён</li>
+            <li>☐ Достаточно данных (NOPT + NFWD + 500 баров)</li>
+            <li>☐ LOT = 0.01 (минимальный для теста)</li>
+            <li>☐ Проверены спреды (не превышают MAX_SPREAD_PCT)</li>
+        </ul>
+
+        <h3>12.2 Первый день</h3>
+        <ul>
+            <li> Оптимизация прошла успешно (50 итераций)</li>
+            <li> Найдены чемпионы (хотя бы 1 пара)</li>
+            <li>☐ Win Rate > 55%</li>
+            <li>☐ Total PnL > 1%</li>
+            <li>☐ Avg Hold > 3 бара</li>
+        </ul>
+
+        <h2>13. ГЛАВНЫЙ ПРИНЦИП</h2>
+        <div class="principle-box">
+            <div class="principle-list">
+                <ol>
+                    <li>Рынок меняется каждый день.</li>
+                    <li>Наша сила — в адаптации.</li>
+                    <li>Не пытайся предсказать будущее.</li>
+                    <li>Лови текущий момент.</li>
+                    <li>Управляй риском.</li>
+                    <li>Повторяй завтра.</li>
+                </ol>
+            </div>
+        </div>
+
+        <p style="text-align: center; margin-top: 40px; font-size: 18px; color: #7f8c8d;">
+            <strong>Система:</strong> GAUSSIAN ENSEMBLE v5.1<br>
+            <strong>Дата создания:</strong> 2025<br>
+            <strong>Удачи в торговле!</strong> 🚀
+        </p>
+    </div>
+</body>
+</html>

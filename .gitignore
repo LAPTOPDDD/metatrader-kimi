@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.py[oc]
+*.log
+*.zip
+train_data*.csv
+bot_log.txt
+ai_log.txt
+bot_status.json

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>wide_brainV2.1 — архитектура и логика</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #f5f9fe;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 2rem 1.5rem;
+      color: #1e293b;
+    }
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 2.5rem;
+      box-shadow: 0 20px 40px -12px rgba(0,20,40,0.25);
+      padding: 2.5rem 2.8rem;
+      transition: all 0.2s;
+    }
+    h1 {
+      font-size: 2.6rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 3px solid #d0e0ff;
+      padding-bottom: 0.9rem;
+      margin-bottom: 2rem;
+    }
+    h1 small {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #3b6b9b;
+      margin-left: 0.75rem;
+      background: #e8effa;
+      padding: 0.2rem 1rem;
+      border-radius: 40px;
+    }
+    .badge {
+      background: #1e3a5f;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.9rem;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem 2.5rem;
+      margin: 2rem 0 1.5rem;
+    }
+    .card {
+      background: #f8fafc;
+      border-radius: 1.8rem;
+      padding: 1.5rem 1.8rem;
+      box-shadow: inset 0 0 0 1px #e9edf3, 0 6px 12px -6px rgba(0,0,0,0.05);
+      transition: 0.15s;
+    }
+    .card:hover {
+      background: #f1f6fd;
+      box-shadow: inset 0 0 0 1px #b9d0f0, 0 8px 16px -8px rgba(20,50,100,0.12);
+    }
+    .card h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+      color: #0c2b4f;
+      border-bottom: 1px dashed #cbd9ec;
+      padding-bottom: 0.5rem;
+    }
+    .card h2 span {
+      background: #2b5797;
+      color: white;
+      width: 26px;
+      height: 26px;
+      border-radius: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .card ul, .card p {
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: #1f3a57;
+    }
+    .card li {
+      margin-left: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .highlight {
+      background: #e6effb;
+      padding: 0.1rem 0.4rem;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.9em;
+      color: #0c3d6b;
+    }
+    .code-block {
+      background: #0c1e2f;
+      color: #d4e6ff;
+      padding: 0.8rem 1.2rem;
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      margin: 0.6rem 0 0.2rem;
+      border: 1px solid #2a405a;
+    }
+    .flow-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem 1.2rem;
+      background: #eef4fa;
+      border-radius: 60px;
+      padding: 0.8rem 1.8rem;
+      margin: 1.5rem 0 1rem;
+      font-weight: 500;
+    }
+    .flow-row .arrow {
+      font-size: 1.6rem;
+      color: #3d6a9b;
+      font-weight: 300;
+    }
+    .chip {
+      background: white;
+      padding: 0.2rem 1rem;
+      border-radius: 40px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      border: 1px solid #c7d9ed;
+      font-size: 0.9rem;
+    }
+    .chip strong {
+      color: #103a63;
+    }
+    .table-wrap {
+      background: #f2f7fe;
+      border-radius: 1.6rem;
+      padding: 0.8rem 1.2rem;
+      margin: 1rem 0 0.5rem;
+    }
+    .config-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.5rem 1rem;
+      background: #ecf3fb;
+      padding: 1rem 1.5rem;
+      border-radius: 30px;
+      margin: 0.8rem 0;
+    }
+    .config-item {
+      display: flex;
+      align-items: baseline;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+    }
+    .config-item .label {
+      font-weight: 600;
+      color: #1b3b60;
+      font-size: 0.85rem;
+    }
+    .config-item .value {
+      background: white;
+      padding: 0.05rem 0.7rem;
+      border-radius: 30px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      border: 1px solid #b7cee9;
+    }
+    .footnote {
+      margin-top: 2.2rem;
+      font-size: 0.95rem;
+      border-top: 2px solid #dae5f2;
+      padding-top: 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      color: #2b4b6e;
+    }
+    .footnote a {
+      color: #1d4f7a;
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px dotted #93b4db;
+    }
+    .footnote a:hover {
+      color: #002b4f;
+      border-bottom: 1px solid #1a4979;
+    }
+    @media (max-width: 760px) {
+      .container { padding: 1.8rem; }
+      .grid-2col { grid-template-columns: 1fr; }
+      h1 { font-size: 2rem; flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>
+    🧠 wide_brain V2.1 
+    <small>«только база» — абляция Stage2 & мета-контроллера</small>
+    <span class="badge" style="margin-left: auto;">walk‑forward</span>
+  </h1>
+
+  <!-- Краткий слоган / суть -->
+  <div style="background: #dde9fa; border-radius: 60px; padding: 0.6rem 2rem; margin-bottom: 1.6rem; display: inline-block;">
+    <span style="font-weight: 500;">⚙️ базовая линия для сравнения с V2 — только Stage‑1, равновесный портфель, scale=1</span>
+  </div>
+
+  <!-- КОНФИГ -->
+  <div style="margin-bottom: 1.8rem;">
+    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.4rem;">
+      <span style="font-weight: 600; font-size: 1.2rem;">⚙️ КОНФИГУРАЦИЯ</span>
+      <span style="background: #1f3d60; color: white; padding: 0.1rem 1rem; border-radius: 40px; font-size: 0.75rem;">параметры скрипта</span>
+    </div>
+    <div class="config-grid">
+      <div class="config-item"><span class="label">SIGMA</span><span class="value">1.5</span></div>
+      <div class="config-item"><span class="label">BASE_TF</span><span class="value">M15</span></div>
+      <div class="config-item"><span class="label">HIGHER</span><span class="value">M30, H1, H4</span></div>
+      <div class="config-item"><span class="label">BARS_TRAIN</span><span class="value">1000</span></div>
+      <div class="config-item"><span class="label">FOLD</span><span class="value">90</span></div>
+      <div class="config-item"><span class="label">N_FOLDS</span><span class="value">10</span></div>
+      <div class="config-item"><span class="label">NORM</span><span class="value">True</span></div>
+      <div class="config-item"><span class="label">PAIRS</span><span class="value">все (None)</span></div>
+    </div>
+  </div>
+
+  <!-- 2-колоночная архитектура: этапы -->
+  <div class="grid-2col">
+    <!-- 1. ЗАГРУЗКА + ПРИЗНАКИ -->
+    <div class="card">
+      <h2><span>1</span> Загрузка &amp; признаки</h2>
+      <ul>
+        <li><span class="highlight">load_pair_tf()</span> — чтение <strong>CSV</strong> для каждой пары и таймфрейма</li>
+        <li><span class="highlight">pair_features()</span> — строит мульти‑ТФ матрицу:
+          <ul><li>базовый <strong>M15</strong> + старшие (M30, H1, H4) через <code>FeatureStore</code> из QWEN6</li>
+          <li>интерполяция по времени (поиск ближайшей свечи старшего ТФ)</li></ul>
+        </li>
+        <li><span class="highlight">make_target()</span> — цель (бинарная) на основе производной сглаженной цены (гауссовский фильтр с σ=1.5)</li>
+        <li>возвращает: <span class="highlight">X</span> (признаки), <span class="highlight">y</span> (цель), <span class="highlight">ret</span> (доходности) для всех пар</li>
+      </ul>
+      <div class="code-block">
+# пример: X.shape = (бары, признаки_базовые + признаки_старших_ТФ)
+# цель: 1 если производная >0, иначе 0
+      </div>
+    </div>
+
+    <!-- 2. STAGE‑1 (базовая модель) -->
+    <div class="card">
+      <h2><span>2</span> Stage‑1 (каждая пара)</h2>
+      <ul>
+        <li>для <strong>каждой валютной пары</strong> обучается своя модель (из модуля QWEN6): 
+          <span class="highlight">q6.train_model()</span> — классификатор</li>
+        <li>предсказания → вероятности <span class="highlight">proba1[s]</span> → сигнал <strong>±1</strong> (порог 0.5)</li>
+        <li><strong>никакого Stage2</strong> (кросс‑активные головы) — только собственная модель пары</li>
+        <li>сигналы всех пар объединяются в матрицу <span class="highlight">sig</span> размером (бары × число пар)</li>
+      </ul>
+      <div style="background: #d7e5f8; border-radius: 30px; padding: 0.6rem 1.2rem; margin: 0.4rem 0;">
+        <span style="font-weight: 500;">🔹 Базовая логика:</span> каждая пара решает сама за себя, без кросс-влияния
+      </div>
+    </div>
+
+    <!-- 3. ПОРТФЕЛЬ (равновесный, scale=1) -->
+    <div class="card">
+      <h2><span>3</span> Портфель &amp; риск</h2>
+      <ul>
+        <li><strong>равновесный</strong> — все пары имеют одинаковый вес (1 / P)</li>
+        <li><span class="highlight">scale = 1</span> (без риск‑контроллера, без мета‑уровня)</li>
+        <li>доходность портфеля на шаге <strong>t</strong>: 
+          <span class="highlight">pr[t] = mean( sig[t] * ret[t] )</span> (среднее по парам)</li>
+        <li>никакого динамического управления размером позиции, никакого «мета-контроллера риска»</li>
+      </ul>
+      <div style="background: #e6effa; border-radius: 30px; padding: 0.3rem 1.2rem; margin-top: 0.4rem;">
+        <span class="badge" style="background: #3973a9;">абляция</span> убраны Stage2 и мета-контроллер
+      </div>
+    </div>
+
+    <!-- 4. WALK‑FORWARD + ЭКВИТИ -->
+    <div class="card">
+      <h2><span>4</span> Walk‑forward &amp; оценка</h2>
+      <ul>
+        <li><span class="highlight">BARS_TRAIN=1000</span> — первое обучающее окно</li>
+        <li><span class="highlight">FOLD=90</span> — длина тестового окна, шаг прокрутки</li>
+        <li><span class="highlight">N_FOLDS=10</span> — число окон (или пока хватает данных)</li>
+        <li>на каждом фолде: нормировка фич (StandardScaler) на train-статистике</li>
+        <li>сохраняется эквити <span class="highlight">eq = cumprod(1+pr)</span>, график в PNG и CSV</li>
+      </ul>
+      <div class="table-wrap">
+        <span style="font-weight: 500;">📈 Итоговые метрики:</span> доходность %, максимальная просадка (maxDD)
+      </div>
+    </div>
+  </div>
+
+  <!-- Схема потока (упрощённая) -->
+  <div class="flow-row">
+    <span class="chip"><strong>📁 данные</strong> (CSV)</span>
+    <span class="arrow">→</span>
+    <span class="chip"><strong>признаки</strong> M15+старшие</span>
+    <span class="arrow">→</span>
+    <span class="chip"><strong>цель</strong> (производная)</span>
+    <span class="arrow">→</span>
+    <span class="chip"><strong>Stage‑1</strong> (модель/пара)</span>
+    <span class="arrow">→</span>
+    <span class="chip"><strong>сигналы ±1</strong></span>
+    <span class="arrow">→</span>
+    <span class="chip"><strong>портфель</strong> (равный вес)</span>
+    <span class="arrow">→</span>
+    <span class="chip"><strong>эквити</strong></span>
+  </div>
+
+  <!-- Детали абляции и сравнения -->
+  <div style="background: #edf4fc; border-radius: 2rem; padding: 1.5rem 2rem; margin: 1.8rem 0 0.5rem;">
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem 2.5rem; align-items: center;">
+      <div style="display: flex; gap: 0.4rem; align-items: center;">
+        <span style="background: #2e5a82; width: 12px; height: 12px; border-radius: 20px; display: inline-block;"></span>
+        <span style="font-weight: 600;">Базовая линия (V2.1)</span>
+      </div>
+      <div style="display: flex; gap: 0.3rem 1.2rem; flex-wrap: wrap;">
+        <span class="chip" style="background: #dce8f5;">✔ Stage‑1 (своя модель)</span>
+        <span class="chip" style="background: #dce8f5;">✔ мульти‑ТФ</span>
+        <span class="chip" style="background: #f0d9d9;">✖ Stage‑2 (кросс‑активные головы)</span>
+        <span class="chip" style="background: #f0d9d9;">✖ мета‑контроллер риска</span>
+        <span class="chip" style="background: #dce8f5;">✔ равновесный портфель, scale=1</span>
+      </div>
+    </div>
+    <div style="margin-top: 0.8rem; font-size: 0.95rem; color: #1f3d62;">
+      <span style="background: #c7dcf5; padding: 0.1rem 1rem; border-radius: 30px;">цель: воспроизвести «чистый» Stage‑1 для сравнения с полной версией V2</span>
+    </div>
+  </div>
+
+  <!-- Итоговый вывод / что делает скрипт -->
+  <div style="margin: 2rem 0 0.5rem; background: #e2ecfa; border-radius: 30px; padding: 1.2rem 2rem;">
+    <div style="display: flex; align-items: flex-start; gap: 0.8rem;">
+      <span style="font-size: 2rem;">🧩</span>
+      <div>
+        <span style="font-weight: 700; font-size: 1.1rem;">Что делает wide_brainV2.1.py (абляция)?</span>
+        <ul style="margin-top: 0.4rem; list-style-type: '▹ '; padding-left: 1.4rem; line-height: 1.6;">
+          <li>Загружает исторические данные для всех пар (или указанных) по нескольким ТФ.</li>
+          <li>Строит мульти‑таймфреймовые признаки и бинарную цель (наклон сглаженной цены).</li>
+          <li>Обучает <strong>отдельную модель</strong> для каждой пары на основе её собственных признаков (Stage‑1).</li>
+          <li>Генерирует сигналы (шорт/лонг) и формирует <strong>равновесный портфель</strong> без дополнительных слоёв риска.</li>
+          <li>Проводит <strong>walk‑forward</strong> (скользящее окно) с фиксированным шагом, сохраняет эквити.</li>
+          <li>Выводит итоговую доходность и максимальную просадку, строит график эквити.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Футер с пояснением -->
+  <div class="footnote">
+    <span>📌 wide_brainV2.1 — «только база» для сравнения с полной версией (V2). <br>Код использует модуль <strong>QWEN6</strong> для FeatureStore и train_model.</span>
+    <span>⚡ график эквити → <code>wide_equity_base.png</code> · данные → <code>wide_equity_base.csv</code></span>
+  </div>
+
+</div>
+</body>
+</html>

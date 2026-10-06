@@ -1,0 +1,30 @@
+[
+  {
+    "symbol": "GBPZAR",
+    "timeframe": "M15",
+    "magic": 100000,
+    "sigma": 2.0,
+    "hold": 19
+  },
+  {
+    "symbol": "GBPZAR",
+    "timeframe": "M30",
+    "magic": 100001,
+    "sigma": 2.2,
+    "hold": 12
+  },
+  {
+    "symbol": "GBPZAR",
+    "timeframe": "H1",
+    "magic": 100002,
+    "sigma": 1.1,
+    "hold": 19
+  },
+  {
+    "symbol": "GBPZAR",
+    "timeframe": "H4",
+    "magic": 100003,
+    "sigma": 2.8000000000000003,
+    "hold": 7
+  }
+]

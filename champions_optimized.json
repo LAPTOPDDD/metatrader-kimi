@@ -1,0 +1,58 @@
+[
+  {
+    "symbol": "EURUSD",
+    "timeframe": "M30",
+    "magic": 100000,
+    "sigma": 0.9,
+    "hold": 18
+  },
+  {
+    "symbol": "EURUSD",
+    "timeframe": "H1",
+    "magic": 100001,
+    "sigma": 0.7,
+    "hold": 2
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "M30",
+    "magic": 100002,
+    "sigma": 1.3,
+    "hold": 17
+  },
+  {
+    "symbol": "GBPUSD",
+    "timeframe": "H1",
+    "magic": 100003,
+    "sigma": 2.3,
+    "hold": 20
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "M30",
+    "magic": 100004,
+    "sigma": 1.9000000000000001,
+    "hold": 16
+  },
+  {
+    "symbol": "USDJPY",
+    "timeframe": "H1",
+    "magic": 100005,
+    "sigma": 2.9000000000000004,
+    "hold": 16
+  },
+  {
+    "symbol": "AUDUSD",
+    "timeframe": "M30",
+    "magic": 100006,
+    "sigma": 2.0,
+    "hold": 17
+  },
+  {
+    "symbol": "AUDUSD",
+    "timeframe": "H1",
+    "magic": 100007,
+    "sigma": 1.1,
+    "hold": 17
+  }
+]
